@@ -23,6 +23,8 @@ const nextConfig = {
     images: {
       unoptimized: true,
     },
+
+    distDir: "/nextjs-github-pages"
   };
   
   export default nextConfig;
