@@ -47,14 +47,14 @@ export default function Home() {
         title: "title",
         channel_id: "channel_id",
         channel_name: "channel_name",
-        matches: [{snippet:"test", timestamp:5000}]
+        matches: [{snippet:"test", timestamp:3661}]
     }
     const dummyResult2: IResult = {
         video_id: "video_id2",
         title: "title2",
         channel_id: "channel_id2",
         channel_name: "channel_name2",
-        matches: [{snippet:"test2", timestamp:2024}]
+        matches: [{snippet:"test2", timestamp:65}]
     }
     if(searchResults.length == 0){
         searchResults.push(dummyResult);

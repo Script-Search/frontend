@@ -6,43 +6,18 @@ type Props = {
 }
 
 const timestampConversion = (time:number) => {
-    if(time > 3600){
-        let hours = Math.floor(time / 3600);
-        let minutes = Math.floor((time % 3600) / 60);
-        let seconds = time % 60;
+    let hours = Math.floor(time / 3600);
+    let minutes = Math.floor((time % 3600) / 60);
+    let seconds = time % 60;
 
-        if(minutes >= 10 && seconds >= 10){
-            return hours + ":" + minutes + ":" + seconds;
-        }
-        else if(minutes < 10 && seconds >= 10){
-            return hours + ":0" + minutes + ":" + seconds;
-        }
-        else if(minutes >= 10 && seconds < 10){
-            return hours + ":" + minutes + ":0" + seconds;
-        }
-        else{
-            return hours + ":0" + minutes + ":0" + seconds;
-        }
+    let formattedMinutes = minutes.toString().padStart(2, '0');
+    let formattedSeconds = seconds.toString().padStart(2, '0');
 
+    if (hours > 0) {
+        return `${hours}:${formattedMinutes}:${formattedSeconds}`;
+    } else {
+        return `${formattedMinutes}:${formattedSeconds}`;
     }
-    else{
-        let minutes = Math.floor(time / 60);
-        let seconds = time % 60;
-
-        if(minutes >= 10 && seconds >= 10){
-            return minutes + ":" + seconds;
-        }
-        else if(minutes < 10 && seconds >= 10){
-            return "0" + minutes + ":" + seconds;
-        }
-        else if(minutes >= 10 && seconds < 10){
-            return minutes + ":0" + seconds;
-        }
-        else{
-            return "0" + minutes + ":0" + seconds;
-        }
-    }
-
 }
 
 const Card = ({videoInfo}: Props) => {
