@@ -91,7 +91,7 @@ export default function Home() {
                 {searchResults.map((result, index) => {
                     return(
                         
-                            <Card videoInfo={result}></Card>
+                            <Card videoInfo={result} key={index}></Card>
                     )
                 })
                 }
