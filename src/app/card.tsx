@@ -30,7 +30,7 @@ const Card = ({videoInfo}: Props) => {
             <div className="flex flex-row">
                 {videoInfo.matches.map((result, index) => {
                     return(
-                        <p>{timestampConversion(result.timestamp) + " " + result.snippet}</p>
+                        <p key={index}>{timestampConversion(result.timestamp) + " " + result.snippet}</p>
                     )
                 })
                 }
