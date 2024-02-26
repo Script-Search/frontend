@@ -1,18 +1,27 @@
 'use client';
 import Image from "next/image";
+import { IResult, IMatches } from "./IResult";
 import React, { useState } from "react";
+import Card from "./card";
 
 const apiLink = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-api"
 
 export default function Home() {
     const [resultsReceived, setResultsReceived] = useState(false);
     const [results, setResults] = useState("");
+    const [searchResults, setSearchResults] = useState<IResult[]>([]);
 
     const backendConnect = () => {
         let query = document.getElementById("query") as HTMLInputElement;
-        let value = query.value;
+        let channelLink = document.getElementById("link") as HTMLInputElement;
 
-        let newLink = apiLink + "?request=" + value;
+        let newLink = "";
+        if(!channelLink.value){
+            newLink = apiLink + "?query=" + query.value;
+        }
+        else{
+            newLink = apiLink + "?url=" + channelLink.value + "&query=" + query.value;
+        }
 
         fetch(newLink).then(response => {
             if (!response.ok) {
@@ -23,7 +32,7 @@ export default function Home() {
             .then(data => {
                 console.log(data);
                 setResultsReceived(true);
-                setResults(data.transcript);
+                setSearchResults(data["hits"]);
             })
     }
 
@@ -31,6 +40,27 @@ export default function Home() {
         if (e.key === 'Enter') {
             backendConnect(); 
         }
+    }
+
+    const dummyResult: IResult = {
+        video_id: "video_id",
+        title: "title",
+        channel_id: "channel_id",
+        channel_name: "channel_name",
+        matches: [{snippet:"test", timestamp:5000}]
+    }
+    const dummyResult2: IResult = {
+        video_id: "video_id2",
+        title: "title2",
+        channel_id: "channel_id2",
+        channel_name: "channel_name2",
+        matches: [{snippet:"test2", timestamp:2024}]
+    }
+    if(searchResults.length == 0){
+        searchResults.push(dummyResult);
+    }
+    if(searchResults.length == 1){
+        searchResults.push(dummyResult2);
     }
 
     return (
@@ -48,13 +78,23 @@ export default function Home() {
                 <p className="text-2xl before:content-['ScriptSearch'] before:text-red-500 before:font-bold before:"> - YouTube Transcript Search</p>
             </div>
 
-            {/* <div className="">
+            <div className="">
                 <input type="text" id="link" placeholder="Enter a channel/playlist link" className="border rounded border-gray-500 p-2 my-1 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"></input>
-            </div> */}
+            </div>
 
             <div className="justify-center">
-                <input type="text" id="query" placeholder="Enter a video id" onKeyUp={handleEnter} className="border rounded border-gray-500 p-2 w-64 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"></input>
+                <input type="text" id="query" placeholder="Enter a query" onKeyUp={handleEnter} className="border rounded border-gray-500 p-2 w-64 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"></input>
                 <button id="search" onClick={backendConnect} className="border border-gray-500 rounded py-2  w-16 transition-colors ease-in-out hover:bg-red-600 hover:text-white hover:border-red-700">Submit</button>
+            </div>
+
+            <div className="flex flex-row">
+                {searchResults.map((result, index) => {
+                    return(
+                        
+                            <Card videoInfo={result}></Card>
+                    )
+                })
+                }
             </div>
 
             {resultsReceived &&
