@@ -16,10 +16,11 @@ export default function Home() {
         let channelLink = document.getElementById("link") as HTMLInputElement;
 
         let newLink = "";
-        if(!channelLink.value){
+        if(!channelLink.value) {
             newLink = apiLink + "?query=" + query.value;
-        }
-        else{
+        } else if (!query.value) {
+            newLink = apiLink + "?url=" + channelLink.value;
+        } else {
             newLink = apiLink + "?url=" + channelLink.value + "&query=" + query.value;
         }
 
