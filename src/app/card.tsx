@@ -36,7 +36,7 @@ const createMarkup = (snippet: string) => {
 }
 
 const Card = ({videoInfo}: Props) => {
-    const thumbnailLink = "https://i.ytimg.com/vi/" + videoInfo.video_id + "/mqdefault.jpg";
+    const thumbnailLink = `https://i.ytimg.com/vi/${videoInfo.video_id}/mqdefault.jpg`;
     return (
         <div className="border rounded border-gray-500 p-2 m-2">
             <Image

@@ -14,11 +14,11 @@ export default function Home() {
 
         let newLink = "";
         if(!channelLink.value) {
-            newLink = apiLink + "?query=" + query.value;
+            newLink = apiLink + `?query=${query.value}`;
         } else if (!query.value) {
-            newLink = apiLink + "?url=" + channelLink.value;
+            newLink = apiLink + `?url=${channelLink.value}`;
         } else {
-            newLink = apiLink + "?url=" + channelLink.value + "&query=" + query.value;
+            newLink = apiLink + `?url=${channelLink.value}&query=${query.value}`;
         }
 
         fetch(newLink).then(response => {
@@ -58,7 +58,6 @@ export default function Home() {
             <div className="flex flex-row">
                 {searchResults.map((result, index) => {
                     return(
-                        
                             <Card videoInfo={result} key={index}></Card>
                     )
                 })
