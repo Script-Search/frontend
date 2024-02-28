@@ -37,6 +37,20 @@ const snippetConversion = (snippet: string) => {
     );
 }
 
+const createMarkup = (snippet: string) => {
+    // Split the string on "mark", then map over the pieces
+    let markExpr= /<\/?mark>/gi
+    return snippet.split(markExpr).map((part, index, array) => {
+        // For every odd part, wrap it with a <b> tag, indicating it was between "mark" tags
+        if (index % 2 === 1) {
+            return <b key={index}>{part}</b>;
+        } else {
+            // For even parts, just return the text. If it's the last part, don't add anything after
+            return part;
+        }
+    });
+}
+
 const Card = ({videoInfo}: Props) => {
     const thumbnailLink = "https://i.ytimg.com/vi/" + videoInfo.video_id + "/mqdefault.jpg";
     return (
@@ -59,7 +73,7 @@ const Card = ({videoInfo}: Props) => {
                             <a href={`https://youtu.be/${videoInfo.video_id}?t=${result.timestamp}`} className="font-bold text-blue-500">
                                 {timestampConversion(result.timestamp)}
                             </a>
-                            <span dangerouslySetInnerHTML={{ __html: result.snippet.replaceAll("mark", "b") }} />
+                            <span> {createMarkup(result.snippet)} </span>
                         </div>
                     );                    
                 })
