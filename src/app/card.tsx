@@ -54,12 +54,14 @@ const Card = ({videoInfo}: Props) => {
             
             <div className="flex flex-col">
                 {videoInfo.matches.map((result, index) => {
-                    return(
+                    return (
                         <div key={index} className="my-3">
-                            <a href={"https://youtu.be/" + videoInfo.video_id + "?t=" + result.timestamp} className="font-bold text-blue-500">{timestampConversion(result.timestamp)}</a>
-                            {snippetConversion(result.snippet)}
+                            <a href={`https://youtu.be/${videoInfo.video_id}?t=${result.timestamp}`} className="font-bold text-blue-500">
+                                {timestampConversion(result.timestamp)}
+                            </a>
+                            <span dangerouslySetInnerHTML={{ __html: result.snippet.replaceAll("mark", "b") }} />
                         </div>
-                    )
+                    );                    
                 })
                 }
             </div>
