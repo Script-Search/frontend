@@ -54,7 +54,7 @@ const Card = ({videoInfo}: Props) => {
                 {videoInfo.matches.map((result, index) => {
                     return (
                         <div key={index} className="my-3">
-                            <a href={`https://youtu.be/${videoInfo.video_id}?t=${result.timestamp}`} className="font-bold text-blue-500">
+                            <a href={`https://youtu.be/${videoInfo.video_id}?t=${result.timestamp}`} target="_blank" className="font-bold text-blue-500">
                                 {timestampConversion(result.timestamp)}
                             </a>
                             <span> {createMarkup(result.snippet)} </span>
