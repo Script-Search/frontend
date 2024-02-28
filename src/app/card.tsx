@@ -21,22 +21,6 @@ const timestampConversion = (time:number) => {
     }
 }
 
-const snippetConversion = (snippet: string) => {
-    let re = /<mark>/gi;
-    let index = snippet.search(re);
-
-    let re2 = /<\/mark>/gi;
-    let index2 = snippet.search(re2);
-
-    return (
-        <div>
-            {snippet.substring(0, index)}
-            <b>{snippet.substring(index + 6, index2)}</b>
-            {snippet.substring(index2 + 7)}
-        </div>
-    );
-}
-
 const createMarkup = (snippet: string) => {
     // Split the string on "mark", then map over the pieces
     let markExpr= /<\/?mark>/gi
