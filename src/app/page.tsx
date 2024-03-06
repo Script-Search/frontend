@@ -55,10 +55,10 @@ export default function Home() {
                 <button id="search" onClick={backendConnect} className="border border-gray-500 rounded py-2  w-16 transition-colors ease-in-out hover:bg-red-600 hover:text-white hover:border-red-700">Submit</button>
             </div>
 
-            <div className="flex flex-row">
+            <div className="flex flex-row flex-wrap justify-center items-center">
                 {searchResults.map((result, index) => {
                     return(
-                            <Card videoInfo={result} key={index}></Card>
+                        <Card videoInfo={result} key={index}></Card>
                     )
                 })
                 }
