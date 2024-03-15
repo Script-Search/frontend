@@ -85,7 +85,7 @@ const Card = ({videoInfo}: Props) => {
                                 );                    
                             })}
                             <br/>
-                            <button type="button" onClick={closeModal} className="bg-red-600 text-white p-2">Close Modal</button>
+                            <button type="button" onClick={closeModal} className="bg-red-600 text-white p-2">Close</button>
                     </div>
             </dialog>
         }

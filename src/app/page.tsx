@@ -47,7 +47,7 @@ export default function Home() {
             </div>
 
             <div className="">
-                <input type="text" id="link" placeholder="Enter a channel/playlist link" className="border rounded border-gray-500 p-2 my-1 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"></input>
+                <input type="text" id="link" placeholder="Enter a video/channel/playlist link" className="border rounded border-gray-500 p-2 my-1 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"></input>
             </div>
 
             <div className="justify-center">
