@@ -47,6 +47,15 @@ const Card = ({videoInfo}: Props) => {
         setModal(false);
     }
 
+    function handleOverlayClick(event: React.MouseEvent) {
+        // Assuming the modal content has a specific class name 'modal-content'
+        // This checks if the clicked element or any of its parents have the 'modal-content' class
+        const target = event.target as Element;
+        if (!target.closest('.modal-content')) {
+            closeModal();
+        }
+    }
+
     return (        
         <div className="flex flex-col">
             <div onClick={openModal} className="w-80 h-72 border rounded border-gray-500 p-2 m-2 hover:bg-red-600 hover:text-white hover:border-red-700">
@@ -63,7 +72,7 @@ const Card = ({videoInfo}: Props) => {
             </div> 
 
         {modal &&
-                <dialog className="fixed left-0 top-0 w-full h-full bg-black bg-opacity-50 overflow-auto z-50 backdrop-blur flex justify-center items-center">
+                <dialog onClick={handleOverlayClick} className="fixed left-0 top-0 w-full h-full bg-black bg-opacity-50 overflow-auto z-50 backdrop-blur flex justify-center items-center">
                     <div className="bg-white m-auto p-8 border rounded-lg flex flex-col flex-wrap">
                             {videoInfo.matches.map((result, index) => {
                                 return (
