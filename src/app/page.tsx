@@ -9,6 +9,7 @@ const apiLink = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-
 export default function Home() {
     const [searchResults, setSearchResults] = useState<IResult[]>([]);
     const [query, setQuery] = useState('');
+    const [showError, setShowError] = useState(false);
 
     const backendConnect = (query: string) => {
         let channelLink = document.getElementById("link") as HTMLInputElement;
@@ -48,9 +49,16 @@ export default function Home() {
                 <QueryInput 
                     onEnterPress={backendConnect}
                     onInputChange={setQuery}
+                    onInputError={setShowError}
                     />
                 <button id="search" onClick={() => backendConnect(query)} className="border border-gray-500 rounded py-2  w-16 transition-colors ease-in-out hover:bg-red-600 hover:text-white hover:border-red-700">Submit</button>
             </div>
+
+            {showError && 
+                <div className="text-red-500">
+                    <p>Only up to 5 words are allowed.</p>
+                </div>
+            }
 
             <div className="flex flex-row flex-wrap justify-center items-center">
                 {searchResults.map((result, index) => {
