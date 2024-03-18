@@ -37,7 +37,7 @@ const QueryInput: React.FC<QueryInputProps> = ({ onEnterPress, onInputChange, on
             onChange={handleInputChange}        // onChange allows catching copy-paste into input
             onKeyUp={handleKeyPress}
             placeholder="Enter a query"
-            className="border rounded border-gray-500 p-2 w-64 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+            className="border rounded border-gray-500 p-2 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
         />
     );
 };
