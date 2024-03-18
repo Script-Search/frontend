@@ -38,7 +38,7 @@ export default function Home() {
     return (
         <main className="flex min-h-screen flex-col items-center justify-center p-24">
             <div className="">    
-                <p className="text-2xl before:content-['ScriptSearch'] before:text-red-500 before:font-bold before:"> - YouTube Transcript Search</p>
+                <p className="text-2xl before:content-['ScriptSearch'] before:text-red-600 before:font-bold before:"> - YouTube Transcript Search</p>
             </div>
 
             <div className="">
@@ -55,7 +55,7 @@ export default function Home() {
             </div>
 
             {showError && 
-                <div className="text-red-500">
+                <div className="text-red-600">
                     <p>Only up to 5 words are allowed.</p>
                 </div>
             }

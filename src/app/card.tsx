@@ -27,7 +27,7 @@ const createMarkup = (snippet: string) => {
     return snippet.split(markExpr).map((part, index, array) => {
         // For every odd part, wrap it with a <b> tag, indicating it was between "mark" tags
         if (index % 2 === 1) {
-            return <b key={index}>{part}</b>;
+            return <b id = "modal" key={index}>{part}</b>;
         } else {
             // For even parts, just return the text. If it's the last part, don't add anything after
             return part;
@@ -51,14 +51,14 @@ const Card = ({videoInfo}: Props) => {
         // Assuming the modal content has a specific class name 'modal-content'
         // This checks if the clicked element or any of its parents have the 'modal-content' class
         const target = event.target as Element;
-        if (!target.closest('.modal-content')) {
+        if (!(target.id === "modal")) {
             closeModal();
         }
     }
 
     return (        
         <div className="flex flex-col">
-            <div onClick={openModal} className="w-80 h-72 border rounded border-gray-500 p-2 m-2 hover:bg-red-600 hover:text-white hover:border-red-700">
+            <div onClick={openModal} className="w-80 h-72 border-2 rounded border-gray-500 p-2 m-2 transition-colors ease-in-out duration-300 hover:bg-red-600 hover:text-white hover:border-red-700 cursor-pointer">
                 <Image
                         className="relative w-auto"
                         src={thumbnailLink}
@@ -73,19 +73,20 @@ const Card = ({videoInfo}: Props) => {
 
         {modal &&
                 <dialog onClick={handleOverlayClick} className="fixed left-0 top-0 w-full h-full bg-black bg-opacity-50 overflow-auto z-50 backdrop-blur flex justify-center items-center">
-                    <div className="bg-white m-auto p-8 border rounded-lg flex flex-col flex-wrap">
+                    <div id = "modal" className="bg-white m-auto px-8 py-4 border-8 border-red-600 rounded-lg flex flex-col flex-wrap">
+                        <p id = "modal" className="font-bold text-2xl place-self-center">Results</p>
                             {videoInfo.matches.map((result, index) => {
                                 return (
-                                    <div key={index} className="m-3">
-                                        <a href={`https://youtu.be/${videoInfo.video_id}?t=${result.timestamp}`} target="_blank" className="font-bold text-blue-500">
+                                    <div id = "modal" key={index} className="m-3">
+                                        <a id = "modal" href={`https://youtu.be/${videoInfo.video_id}?t=${result.timestamp}`} target="_blank" className="font-bold text-blue-500">
                                         {timestampConversion(result.timestamp)}
                                         </a>
-                                        <span> {createMarkup(result.snippet)} </span>
+                                        <span id = "modal"> {createMarkup(result.snippet)} </span>
                                     </div>
                                 );                    
                             })}
                             <br/>
-                            <button type="button" onClick={closeModal} className="bg-red-600 text-white p-2">Close</button>
+                            <button type="button" onClick={closeModal} className="bg-red-600 text-white p-2 border border-red-700 rounded-lg transition-all ease-in-out duration-100 hover:font-bold hover:ring-4 hover:ring-red-700 ">Close</button>
                     </div>
             </dialog>
         }
