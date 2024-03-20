@@ -42,7 +42,7 @@ export default function Home() {
         })
     }
 
-    function Items({ currentItems }) {
+    function Items({ currentItems } : {currentItems:IResult[]}) {
         return (
             <>
             {currentItems.map((result, index) => {
@@ -55,7 +55,7 @@ export default function Home() {
         )
     }
     
-    function PaginatedItems({itemsPerPage}) {
+    function PaginatedItems({itemsPerPage}: {itemsPerPage: number}) {
         // Here we use item offsets; we could also use page offsets
         // following the API or data you're working with.
         const [itemOffset, setItemOffset] = useState(0);
@@ -68,7 +68,7 @@ export default function Home() {
         const pageCount = Math.ceil(searchResults.length / itemsPerPage);
       
         // Invoke when user click to request another page.
-        const handlePageClick = (event) => {
+        const handlePageClick = (event:any) => {
           const newOffset = (event.selected * itemsPerPage) % searchResults.length;
           console.log(
             `User requested page number ${event.selected}, which is offset ${newOffset}`
@@ -155,7 +155,7 @@ export default function Home() {
                 </div>
             }
 
-            {searchResults.length != 0 && <div className="flex flex-col flex-wrap justify-center items-center">
+            {searchResults.length != 0 && <div className="flex flex-row flex-wrap justify-center items-center">
                  <PaginatedItems itemsPerPage={4} />
             </div>}
         </main>
