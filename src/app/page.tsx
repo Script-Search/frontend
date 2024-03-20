@@ -3,6 +3,8 @@ import { IResult, IMatches } from "./IResult";
 import React, { useState } from "react";
 import Card from "./card";
 import QueryInput from "./query_input";
+import Image from 'next/image';
+import logo from '../../public/ScriptSearch_Logo.png';
 
 const apiLink = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-api"
 
@@ -40,6 +42,17 @@ export default function Home() {
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-center p-24">
+            <div>
+                <Image
+                        className="relative"
+                        src={logo}
+                        alt="Logo"
+                        width={180}
+                        height={37}
+                        priority
+                    />
+            </div>
+
             <div className="">    
                 <p className="text-2xl before:content-['ScriptSearch'] before:text-red-600 before:font-bold before:"> - YouTube Transcript Search</p>
             </div>
