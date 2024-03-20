@@ -1,6 +1,7 @@
 'use client';
 import { IResult, IMatches } from "./IResult";
 import React, { useState } from "react";
+import ReactPaginate from 'react-paginate';
 import Card from "./card";
 import QueryInput from "./query_input";
 import Image from 'next/image';
@@ -13,6 +14,7 @@ export default function Home() {
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(false);
     const [showError, setShowError] = useState(false);
+    const [itemOffset, setItemOffset] = useState(0);
 
     const backendConnect = (query: string) => {
         let channelLink = document.getElementById("link") as HTMLInputElement;
@@ -39,6 +41,64 @@ export default function Home() {
             setSearchResults(data["hits"]);
         })
     }
+
+    function Items({ currentItems }) {
+        return (
+            <>
+            {currentItems.map((result, index) => {
+                return(
+                    <Card videoInfo={result} key={index}></Card>
+                );
+            })
+          }
+          </>
+        )
+    }
+    
+    function PaginatedItems({itemsPerPage}) {
+        // Here we use item offsets; we could also use page offsets
+        // following the API or data you're working with.
+        const [itemOffset, setItemOffset] = useState(0);
+      
+        // Simulate fetching items from another resources.
+        // (This could be items from props; or items loaded in a local state
+        // from an API endpoint with useEffect and useState)
+        const endOffset = itemOffset + itemsPerPage;
+        const currentItems = searchResults.slice(itemOffset, endOffset);
+        const pageCount = Math.ceil(searchResults.length / itemsPerPage);
+      
+        // Invoke when user click to request another page.
+        const handlePageClick = (event) => {
+          const newOffset = (event.selected * itemsPerPage) % searchResults.length;
+          console.log(
+            `User requested page number ${event.selected}, which is offset ${newOffset}`
+          );
+          setItemOffset(newOffset);
+        };
+      
+        return (
+            <>
+            <Items currentItems={currentItems} />
+          <div>
+            <ReactPaginate
+              breakLabel="..."
+              nextLabel=">"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={5}
+              marginPagesDisplayed={2}
+              pageCount={pageCount}
+              previousLabel="<"
+              renderOnZeroPageCount={null}
+              className="flex flex-row"
+              pageLinkClassName="px-2 mx-1 border-2 border-red-700 rounded"
+              previousLinkClassName="px-2"
+              nextLinkClassName="px-2"
+              activeLinkClassName="bg-red-600 text-white font-bold"
+            />
+          </div>
+          </>
+        );
+      }
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-center p-24">
@@ -95,14 +155,9 @@ export default function Home() {
                 </div>
             }
 
-            <div className="flex flex-row flex-wrap justify-center items-center">
-                {searchResults.map((result, index) => {
-                    return(
-                        <Card videoInfo={result} key={index}></Card>
-                    )
-                })
-                }
-            </div>
+            {searchResults.length != 0 && <div className="flex flex-col flex-wrap justify-center items-center">
+                 <PaginatedItems itemsPerPage={4} />
+            </div>}
         </main>
     );
 }
