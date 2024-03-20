@@ -58,7 +58,7 @@ const Card = ({videoInfo}: Props) => {
 
     return (        
         <div className="flex flex-col">
-            <div onClick={openModal} className="w-80 h-72 border-2 rounded border-gray-500 p-2 m-2 transition-colors ease-in-out duration-300 hover:bg-red-600 hover:text-white hover:border-red-700 cursor-pointer">
+            <div onClick={openModal} className="w-80 h-80 border-2 rounded border-gray-500 p-2 m-2 transition-colors ease-in-out duration-300 hover:bg-red-600 hover:text-white hover:border-red-700 cursor-pointer">
                 <Image
                         className="relative w-auto"
                         src={thumbnailLink}
