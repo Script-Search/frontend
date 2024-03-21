@@ -118,11 +118,11 @@ export default function Home() {
         <main className="flex min-h-screen flex-col items-center justify-center p-24">
             <div>
                 <Image
-                        className="relative invert dark:invert-0"
+                        className="relative invert dark:invert-0 w-80"
                         src={logo}
                         alt="Logo"
-                        width={180}
-                        height={37}
+                        width={960}
+                        height={720}
                         priority
                     />
             </div>
@@ -171,7 +171,7 @@ export default function Home() {
 
             {searchResults.length != 0 && 
             <>
-                <div className="flex flex-row flex-wrap justify-center items-center">
+                <div className="flex flex-row flex-wrap justify-center items-center py-4">
                     <Items currentItems={currentItems} />
                 </div>
             
@@ -186,11 +186,15 @@ export default function Home() {
                     pageCount={pageCount}
                     previousLabel="<"
                     renderOnZeroPageCount={null}
-                    className="flex flex-row my-4 bg-gray-300 p-5 rounded"
-                    pageLinkClassName="text-2xl px-2 mx-1 border-2 border-red-700 rounded text-red-700 bg-white"
-                    previousLinkClassName="text-2xl px-2 mx-1 border-2 border-red-700 rounded bg-red-600 text-white"
-                    nextLinkClassName="text-2xl px-2 mx-1 border-2 border-red-700 rounded bg-red-600 text-white"
-                    breakLinkClassName="text-2xl px-2 mx-1 border-2 border-red-700 rounded text-red-700 bg-white"
+                    className="flex flex-row mt-4 bg-gray-300 p-5 rounded fixed bottom-0 left-0 w-screen justify-center bg-opacity-90"
+                    pageClassName="transition-all ease-in-out duration-100 hover:scale-110"
+                    previousClassName="transition-all ease-in-out duration-100 hover:scale-110"
+                    nextClassName="transition-all ease-in-out duration-100 hover:scale-110"
+                    breakClassName="transition-all ease-in-out duration-100 hover:scale-110"
+                    pageLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded text-red-700 bg-white"
+                    previousLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded bg-red-600 text-white"
+                    nextLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded bg-red-600 text-white"
+                    breakLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded text-red-700 bg-white"
                     activeLinkClassName="[&&]:bg-red-600 [&&]:text-white font-bold"
                     />
                 </div>
