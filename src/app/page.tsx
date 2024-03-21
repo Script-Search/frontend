@@ -22,35 +22,74 @@ export default function Home() {
     const [currentItems, setCurrentItems] = useState(searchResults.slice(itemOffset, endOffset));
     const [currentPage, setCurrentPage] = useState(0);
 
+    function sleep(ms:number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     const backendConnect = (query: string) => {
-        let channelLink = document.getElementById("link") as HTMLInputElement;
+        let url = document.getElementById("link") as HTMLInputElement;
 
-        let newLink = "";
-        if(!channelLink.value) {
-            newLink = apiLink + `?query=${query}`;
-        } else if (!query) {
-            newLink = apiLink + `?url=${channelLink.value}`;
-        } else {
-            newLink = apiLink + `?url=${channelLink.value}&query=${query}`;
-        }
-
+        console.log("backend connect called")
         setLoading(true);
-        fetch(newLink).then(response => {
-            if (!response.ok) {
-                throw new Error("something broke :(");
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data);
-            setLoading(false);
-            setSearchResults(data["hits"]);
 
-            setCurrentPage(0);
-            setItemOffset(0);
-            setEndOffset(itemsPerPage);
-            setCurrentItems(data["hits"].slice(0, itemsPerPage));
-        })
+        // if no URL given, search entire database just as before
+        if (!url.value) {
+            fetch(apiLink + `?query=${query}`).then(response => {
+                if (!response.ok) {
+                    throw new Error("something broke :(");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                setLoading(false);
+                setSearchResults(data["hits"]);
+
+                setCurrentPage(0);
+                setItemOffset(0);
+                setEndOffset(itemsPerPage);
+                setCurrentItems(data["hits"].slice(0, itemsPerPage));
+            })
+        }
+        
+        // if URL given, search just that channel/playlist/video
+        else if (url.value && query) {
+            fetch(apiLink + `?url=${url.value}`).then(response => {
+                console.log(response);
+                if (!response.ok) {
+                    throw new Error("Couldn't retrieve channel_id and video_ids from API");
+                }
+                // console.log("First: " + response)
+                return response.json();         // get channel_id and video_id information from API
+            })
+            .then(data => {
+                sleep(15000).then(() => { console.log('Wait finished!'); }).then(() => {
+                    // pass back to API to perform search
+                    fetch(apiLink + `?query=${query}`, {
+                        method: "POST", 
+                        body: JSON.stringify(data)})
+                        .then(response => {
+                            console.log(response);
+                            if (!response.ok) {
+                                throw new Error("Couldn't search API");
+                            }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log(data);
+                        setLoading(false);
+                        setSearchResults(data["hits"])
+                        
+                        setCurrentPage(0);
+                        setItemOffset(0);
+                        setEndOffset(itemsPerPage);
+                        setCurrentItems(data["hits"].slice(0, itemsPerPage));
+                    });
+                })
+            })
+        }
+        
+        console.log("leaving backend connect")
     }
 
     function Items({ currentItems } : {currentItems:IResult[]}) {
