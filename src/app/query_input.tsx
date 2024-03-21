@@ -7,14 +7,7 @@ interface QueryInputProps {
 }
 const QueryInput: React.FC<QueryInputProps> = ({ onEnterPress, onInputChange, onInputError }) => {
     const [query, setQuery] = useState('');
-    const WORD_LIMIT = fetch("https://us-central1-scriptsearch.cloudfunctions.net/transcript-api").then(response => {
-        if (!response.ok) {
-            throw new Error("couldn't default fetch from API");
-        }
-        return response.json();
-    }).then(data => {
-        return data["word_limit"];
-    })
+    const WORD_LIMIT = 5
 
     const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
@@ -27,9 +20,8 @@ const QueryInput: React.FC<QueryInputProps> = ({ onEnterPress, onInputChange, on
         const words = inputValue.split(/\s+/).filter(Boolean); // Split by spaces and filter out empty entries
 
         let newQuery = inputValue;
-        const actualWordLimit = await WORD_LIMIT;
-        if (words.length >= actualWordLimit) {
-            newQuery = words.slice(0, actualWordLimit).join(' '); // Keep only the first 5 words
+        if (words.length >= WORD_LIMIT) {
+            newQuery = words.slice(0, WORD_LIMIT).join(' '); // Keep only the first 5 words
             onInputError(true);
         } else {
             onInputError(false);
