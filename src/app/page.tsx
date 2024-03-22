@@ -63,7 +63,7 @@ export default function Home() {
                 return response.json();         // get channel_id and video_id information from API
             })
             .then(data => {
-                sleep(15000).then(() => { console.log('Wait finished!'); }).then(() => {
+                sleep(7000).then(() => { console.log('Wait finished!'); }).then(() => {
                     // pass back to API to perform search
                     fetch(apiLink + `?query=${query}`, {
                         method: "POST", 
@@ -118,7 +118,7 @@ export default function Home() {
         <main className="flex min-h-screen flex-col items-center justify-center p-24">
             <div>
                 <Image
-                        className="relative invert dark:invert-0 w-60"
+                        className="relative invert dark:invert-0 w-64 mb-2"
                         src={logo}
                         alt="Logo"
                         width={385}
@@ -186,15 +186,15 @@ export default function Home() {
                     pageCount={pageCount}
                     previousLabel="<"
                     renderOnZeroPageCount={null}
-                    className="flex flex-row mt-4 bg-gray-300 p-5 rounded fixed bottom-0 left-0 w-screen justify-center bg-opacity-90"
+                    className="flex flex-row mt-4 bg-gray-300 p-5 rounded fixed bottom-0 left-0 w-screen justify-center bg-opacity-90 dark:invert"
                     pageClassName="transition-all ease-in-out duration-100 hover:scale-110"
                     previousClassName="transition-all ease-in-out duration-100 hover:scale-110"
                     nextClassName="transition-all ease-in-out duration-100 hover:scale-110"
                     breakClassName="transition-all ease-in-out duration-100 hover:scale-110"
-                    pageLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded text-red-700 bg-white"
-                    previousLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded bg-red-600 text-white"
-                    nextLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded bg-red-600 text-white"
-                    breakLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded text-red-700 bg-white"
+                    pageLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded text-red-700 bg-white dark:invert"
+                    previousLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded bg-red-600 text-white dark:invert"
+                    nextLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded bg-red-600 text-white dark:invert"
+                    breakLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded text-red-700 bg-white dark:invert"
                     activeLinkClassName="[&&]:bg-red-600 [&&]:text-white font-bold"
                     />
                 </div>
