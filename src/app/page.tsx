@@ -5,7 +5,7 @@ import ReactPaginate from 'react-paginate';
 import Card from "./card";
 import QueryInput from "./query_input";
 import Image from 'next/image';
-import logo from '../../public/ScriptSearch_Logo.png';
+import logo from '../../public/ScriptSearch_New_Logo.png';
 
 const apiLink = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-api"
 
@@ -118,11 +118,11 @@ export default function Home() {
         <main className="flex min-h-screen flex-col items-center justify-center p-24">
             <div>
                 <Image
-                        className="relative invert dark:invert-0 w-80"
+                        className="relative invert dark:invert-0 w-60"
                         src={logo}
                         alt="Logo"
-                        width={960}
-                        height={720}
+                        width={385}
+                        height={385}
                         priority
                     />
             </div>
