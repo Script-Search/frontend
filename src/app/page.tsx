@@ -29,7 +29,6 @@ export default function Home() {
     const backendConnect = (query: string) => {
         let url = document.getElementById("link") as HTMLInputElement;
 
-        console.log("backend connect called")
         setLoading(true);
 
         // if no URL given, search entire database just as before
@@ -55,28 +54,34 @@ export default function Home() {
         // if URL given, search just that channel/playlist/video
         else if (url.value && query) {
             fetch(apiLink + `?url=${url.value}`).then(response => {
-                console.log(response);
+                let r = response.json();
+                console.log("First response: " + r);
                 if (!response.ok) {
                     throw new Error("Couldn't retrieve channel_id and video_ids from API");
                 }
                 // console.log("First: " + response)
-                return response.json();         // get channel_id and video_id information from API
+                return r;         // get channel_id and video_id information from API
             })
-            .then(data => {
+            .then(data => { 
+                console.log("Stringified data: " + JSON.stringify(data));
                 sleep(7000).then(() => { console.log('Wait finished!'); }).then(() => {
                     // pass back to API to perform search
                     fetch(apiLink + `?query=${query}`, {
                         method: "POST", 
-                        body: JSON.stringify(data)})
+                        body: JSON.stringify(data),
+                        headers: {
+                            "Content-Type": "application/json",
+                        }})
                         .then(response => {
-                            console.log(response);
+                            let r = response.json();
+                            console.log("Second response: " + r);
                             if (!response.ok) {
                                 throw new Error("Couldn't search API");
                             }
-                        return response.json();
+                            return r;
                     })
                     .then(data => {
-                        console.log(data);
+                        console.log("Search results: " + data);
                         setLoading(false);
                         setSearchResults(data["hits"])
                         
@@ -89,7 +94,6 @@ export default function Home() {
             })
         }
         
-        console.log("leaving backend connect")
     }
 
     function Items({ currentItems } : {currentItems:IResult[]}) {
