@@ -64,7 +64,7 @@ export default function Home() {
             })
             .then(data => { 
                 console.log("Stringified data: " + JSON.stringify(data));
-                sleep(7000).then(() => { console.log('Wait finished!'); }).then(() => {
+                sleep(12000).then(() => { console.log('Wait finished!'); }).then(() => {
                     // pass back to API to perform search
                     fetch(apiLink + `?query=${query}`, {
                         method: "POST", 
