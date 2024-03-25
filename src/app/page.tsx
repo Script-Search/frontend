@@ -14,6 +14,7 @@ export default function Home() {
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(false);
     const [showError, setShowError] = useState(false);
+    const [hasError, setHasError] = useState("");
 
     const itemsPerPage = 5;
     const pageCount = Math.ceil(searchResults.length / itemsPerPage);
@@ -21,6 +22,12 @@ export default function Home() {
     const [endOffset, setEndOffset] = useState(itemsPerPage);
     const [currentItems, setCurrentItems] = useState(searchResults.slice(itemOffset, endOffset));
     const [currentPage, setCurrentPage] = useState(0);
+
+    const handleError = (error:any) => {
+        setLoading(false);
+        setHasError(error);
+        setSearchResults([]);
+    }
 
     function sleep(ms:number) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -34,14 +41,25 @@ export default function Home() {
         // if no URL given, search entire database just as before
         if (!url.value) {
             fetch(apiLink + `?query=${query}`).then(response => {
-                if (!response.ok) {
-                    throw new Error("something broke :(");
+                try{
+                    if (!response.ok) {
+                        throw "something broke :(";
+                    }
+                    return response.json();
                 }
-                return response.json();
+                catch(e){
+                    handleError(e);
+                }
             })
             .then(data => {
                 console.log(data);
                 setLoading(false);
+                if(data["hits"].length == 0){
+                    setHasError("No results")
+                }
+                else{
+                    setHasError("");
+                }
                 setSearchResults(data["hits"]);
 
                 setCurrentPage(0);
@@ -54,13 +72,18 @@ export default function Home() {
         // if URL given, search just that channel/playlist/video
         else if (url.value && query) {
             fetch(apiLink + `?url=${url.value}`).then(response => {
-                let r = response.json();
-                console.log("First response: " + r);
-                if (!response.ok) {
-                    throw new Error("Couldn't retrieve channel_id and video_ids from API");
+                try{
+                    let r = response.json();
+                    console.log("First response: " + r);
+                    if (!response.ok) {
+                        throw "Incorrect URL, please try again.";
+                    }
+                    return r;         // get channel_id and video_id information from API
                 }
-                // console.log("First: " + response)
-                return r;         // get channel_id and video_id information from API
+                catch(e){
+                    handleError(e);
+                    throw e;
+                }
             })
             .then(data => { 
                 console.log("Stringified data: " + JSON.stringify(data));
@@ -73,16 +96,28 @@ export default function Home() {
                             "Content-Type": "application/json",
                         }})
                         .then(response => {
-                            let r = response.json();
-                            console.log("Second response: " + r);
-                            if (!response.ok) {
-                                throw new Error("Couldn't search API");
+                            try{
+                                let r = response.json();
+                                console.log("Second response: " + r);
+                                if (!response.ok) {
+                                    throw "Couldn't search API";
+                                }
+                                return r;
                             }
-                            return r;
+                            catch(e){
+                                handleError(e);
+                                throw e;
+                            }
                     })
                     .then(data => {
                         console.log("Search results: " + data);
                         setLoading(false);
+                        if(data["hits"].length == 0){
+                            setHasError("No results")
+                        }
+                        else{
+                            setHasError("");
+                        }
                         setSearchResults(data["hits"])
                         
                         setCurrentPage(0);
@@ -92,6 +127,15 @@ export default function Home() {
                     });
                 })
             })
+        }
+
+        else{
+            try{
+                throw "Please enter a query."
+            }
+            catch(e){
+                handleError(e);
+            }
         }
         
     }
@@ -171,6 +215,12 @@ export default function Home() {
                 <div className="text-red-600">
                     <p>Only up to 5 words are allowed.</p>
                 </div>
+            }
+
+            {hasError.length != 0 &&
+            <div>
+                <p className="text-2xl font-bold my-10">{hasError}</p>
+            </div>
             }
 
             {searchResults.length != 0 && 
