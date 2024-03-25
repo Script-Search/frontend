@@ -13,8 +13,8 @@ export default function Home() {
     const [searchResults, setSearchResults] = useState<IResult[]>([]);
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(false);
-    const [showError, setShowError] = useState(false);
-    const [hasError, setHasError] = useState("");
+    const [showWordLimit, setShowWordLimit] = useState(false);
+    const [error, setError] = useState("");
 
     const itemsPerPage = 5;
     const pageCount = Math.ceil(searchResults.length / itemsPerPage);
@@ -25,7 +25,7 @@ export default function Home() {
 
     const handleError = (error:any) => {
         setLoading(false);
-        setHasError(error);
+        setError(error);
         setSearchResults([]);
     }
 
@@ -33,32 +33,26 @@ export default function Home() {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    const backendConnect = (query: string) => {
+    const backendConnect = async (query: string) => {
         let url = document.getElementById("link") as HTMLInputElement;
 
         setLoading(true);
 
         // if no URL given, search entire database just as before
         if (!url.value) {
-            fetch(apiLink + `?query=${query}`).then(response => {
-                try{
-                    if (!response.ok) {
-                        throw "something broke :(";
-                    }
-                    return response.json();
+            try {
+                const response = await fetch(apiLink + `?query=${query}`);
+                if (!response.ok) {
+                    throw "something broke :(";
                 }
-                catch(e){
-                    handleError(e);
-                }
-            })
-            .then(data => {
+                const data = await response.json();
                 console.log(data);
                 setLoading(false);
-                if(data["hits"].length == 0){
-                    setHasError("No results")
+                if (data["hits"].length == 0) {
+                    setError("No results.")
                 }
-                else{
-                    setHasError("");
+                else {
+                    setError("");
                 }
                 setSearchResults(data["hits"]);
 
@@ -66,78 +60,58 @@ export default function Home() {
                 setItemOffset(0);
                 setEndOffset(itemsPerPage);
                 setCurrentItems(data["hits"].slice(0, itemsPerPage));
-            })
-        }
-        
-        // if URL given, search just that channel/playlist/video
-        else if (url.value && query) {
-            fetch(apiLink + `?url=${url.value}`).then(response => {
-                try{
-                    let r = response.json();
-                    console.log("First response: " + r);
-                    if (!response.ok) {
-                        throw "Incorrect URL, please try again.";
-                    }
-                    return r;         // get channel_id and video_id information from API
-                }
-                catch(e){
-                    handleError(e);
-                    throw e;
-                }
-            })
-            .then(data => { 
-                console.log("Stringified data: " + JSON.stringify(data));
-                sleep(12000).then(() => { console.log('Wait finished!'); }).then(() => {
-                    // pass back to API to perform search
-                    fetch(apiLink + `?query=${query}`, {
-                        method: "POST", 
-                        body: JSON.stringify(data),
-                        headers: {
-                            "Content-Type": "application/json",
-                        }})
-                        .then(response => {
-                            try{
-                                let r = response.json();
-                                console.log("Second response: " + r);
-                                if (!response.ok) {
-                                    throw "Couldn't search API";
-                                }
-                                return r;
-                            }
-                            catch(e){
-                                handleError(e);
-                                throw e;
-                            }
-                    })
-                    .then(data => {
-                        console.log("Search results: " + data);
-                        setLoading(false);
-                        if(data["hits"].length == 0){
-                            setHasError("No results")
-                        }
-                        else{
-                            setHasError("");
-                        }
-                        setSearchResults(data["hits"])
-                        
-                        setCurrentPage(0);
-                        setItemOffset(0);
-                        setEndOffset(itemsPerPage);
-                        setCurrentItems(data["hits"].slice(0, itemsPerPage));
-                    });
-                })
-            })
-        }
-
-        else{
-            try{
-                throw "Please enter a query."
-            }
-            catch(e){
+            } catch (e) {
                 handleError(e);
             }
         }
-        
+
+        // if URL given, search just that channel/playlist/video
+        else if (url.value && query) {
+            try {
+                const response = await fetch(apiLink + `?url=${url.value}`);
+                if (!response.ok) {
+                    throw "Incorrect URL, please try again.";
+                }
+                const data = await response.json();
+                console.log("First response: " + JSON.stringify(data));
+
+                await sleep(7000);
+                console.log('Wait finished!');
+
+                const searchResponse = await fetch(apiLink + `?query=${query}`, {
+                    method: "POST", 
+                    body: JSON.stringify(data),
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                });
+                if (!searchResponse.ok) {
+                    throw "Couldn't search API";
+                }
+                const searchData = await searchResponse.json();
+                console.log("Second response: " + JSON.stringify(searchData));
+
+                setLoading(false);
+                if (searchData["hits"].length == 0) {
+                    setError("No results.")
+                }
+                else {
+                    setError("");
+                }
+                setSearchResults(searchData["hits"]);
+
+                setCurrentPage(0);
+                setItemOffset(0);
+                setEndOffset(itemsPerPage);
+                setCurrentItems(searchData["hits"].slice(0, itemsPerPage));
+            } catch (e) {
+                handleError(e);
+            }
+        }
+
+        else {
+            handleError("Please enter a query.");
+        }
     }
 
     function Items({ currentItems } : {currentItems:IResult[]}) {
@@ -187,7 +161,7 @@ export default function Home() {
                 <QueryInput 
                     onEnterPress={backendConnect}
                     onInputChange={setQuery}
-                    onInputError={setShowError}
+                    onInputError={setShowWordLimit}
                     />
             </div>
             <button 
@@ -211,15 +185,15 @@ export default function Home() {
             </button>
 
 
-            {showError && 
+            {showWordLimit && 
                 <div className="text-red-600">
                     <p>Only up to 5 words are allowed.</p>
                 </div>
             }
 
-            {hasError.length != 0 &&
+            {error.length != 0 &&
             <div>
-                <p className="text-2xl font-bold my-10">{hasError}</p>
+                <p className="text-2xl font-bold my-10">{error}</p>
             </div>
             }
 
