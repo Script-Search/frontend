@@ -1,5 +1,6 @@
 'use client';
 import { IResult, IMatches } from "./IResult";
+import COMMON_WORDS from "./common_words";
 import React, { useState } from "react";
 import ReactPaginate from 'react-paginate';
 import Card from "./card";
@@ -41,6 +42,12 @@ export default function Home() {
 
     const backendConnect = async (query: string) => {
         let url = document.getElementById("link") as HTMLInputElement;
+
+        // Check if the query is a common word
+        if (COMMON_WORDS.includes(query.toLowerCase().trim())) {
+            handleError("Please enter a more specific query.");
+            return;
+        }
 
         setLoading(true);
 
