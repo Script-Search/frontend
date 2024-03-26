@@ -33,6 +33,12 @@ export default function Home() {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            backendConnect(query);
+        }
+    };
+
     const backendConnect = async (query: string) => {
         let url = document.getElementById("link") as HTMLInputElement;
 
@@ -75,7 +81,7 @@ export default function Home() {
                 const data = await response.json();
                 console.log("First response: " + JSON.stringify(data));
 
-                await sleep(7000);
+                await sleep(10000);
                 console.log('Wait finished!');
 
                 const searchResponse = await fetch(apiLink + `?query=${query}`, {
@@ -154,7 +160,13 @@ export default function Home() {
             </div>
 
             <div className="">
-                <input type="text" id="link" placeholder="Enter a video/channel/playlist link" className="border rounded border-gray-500 p-2 my-1 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"></input>
+                <input 
+                    type="text" 
+                    id="link"
+                    onKeyUp={handleKeyPress}
+                    placeholder="Enter a video/channel/playlist link" 
+                    className="border rounded border-gray-500 p-2 my-1 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                    />
             </div>
 
             <div className="justify-center">
@@ -164,6 +176,7 @@ export default function Home() {
                     onInputError={setShowWordLimit}
                     />
             </div>
+
             <button 
                 id="search" 
                 onClick={() => backendConnect(query)} 
