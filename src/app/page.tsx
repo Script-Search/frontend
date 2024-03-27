@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import ReactPaginate from 'react-paginate';
 import COMMON_WORDS from "../utils/common_words";
 import Card from "../components/card";
-import QueryInput from "../components/query_input";
 import { IResult, IMatches } from "../utils/IResult";
 import logo from '../../public/ScriptSearch_New_Logo.png';
 
@@ -13,9 +12,8 @@ const apiLink = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-
 
 export default function Home() {
     const [searchResults, setSearchResults] = useState<IResult[]>([]);
-    const [query, setQuery] = useState('');
+    const WORD_LIMIT = 5
     const [loading, setLoading] = useState(false);
-    const [showWordLimit, setShowWordLimit] = useState(false);
     const [error, setError] = useState("");
     const [pageLoaded, setPageLoaded] = useState(false);
 
@@ -42,12 +40,16 @@ export default function Home() {
 
     const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            backendConnect(query);
+            backendConnect();
         }
     };
 
-    const backendConnect = async (query: string) => {
+    const backendConnect = async () => {
         let url = document.getElementById("link") as HTMLInputElement;
+        let queryElement = document.getElementById("query") as HTMLInputElement;
+        let query = queryElement.value;
+        
+        setLoading(true);
 
         // Check if the query is a common word
         if (COMMON_WORDS.includes(query.toLowerCase().trim())) {
@@ -55,7 +57,11 @@ export default function Home() {
             return;
         }
 
-        setLoading(true);
+        // Check if the query is too long
+        if (query.split(" ").length > WORD_LIMIT) {
+            handleError("Please enter a query with 5 or fewer words.");
+            return;
+        }
 
         // if no URL given, search entire database just as before
         if (!url.value) {
@@ -184,16 +190,18 @@ export default function Home() {
             </div>
 
             <div className="justify-center">
-                <QueryInput 
-                    onEnterPress={backendConnect}
-                    onInputChange={setQuery}
-                    onInputError={setShowWordLimit}
-                    />
+                <input 
+                    type="text" 
+                    id="query"
+                    onKeyUp={handleKeyPress}
+                    placeholder="Enter a query"
+                    className="border rounded border-gray-500 p-2 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                />
             </div>
 
             <button 
                 id="search" 
-                onClick={() => backendConnect(query)} 
+                onClick={() => backendConnect()} 
                 className="flex justify-center items-center border border-gray-500 rounded py-2 my-1 w-80 transition-colors ease-in-out hover:bg-red-600 hover:text-white hover:border-red-700 space-x-2"
             >
                 {loading && (
@@ -210,13 +218,6 @@ export default function Home() {
                 )}
                 <span>{loading ? "Loading..." : "Search"}</span>
             </button>
-
-
-            {showWordLimit && 
-                <div className="text-red-600">
-                    <p>Only up to 5 words are allowed.</p>
-                </div>
-            }
 
             {error.length != 0 &&
             <div>
@@ -257,7 +258,7 @@ export default function Home() {
             }
             
             <div className="w-11/12 my-5">
-                <p className="p-2 bg-gray-300 border-2 rounded-lg border-gray-700">Welcome to Scriptsearch! This tool
+                <p className="p-2 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">Welcome to ScriptSearch! This tool
                 will allow you to search the transcripts of a specified YouTube channel or playlist.
                 </p>
             </div>
