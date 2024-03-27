@@ -1,4 +1,4 @@
-import { IResult } from "./IResult"
+import { IResult } from "../utils/IResult"
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 

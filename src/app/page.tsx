@@ -1,11 +1,12 @@
 'use client';
-import { IResult, IMatches } from "./IResult";
-import COMMON_WORDS from "./common_words";
-import React, { useEffect, useState } from "react";
-import ReactPaginate from 'react-paginate';
-import Card from "./card";
-import QueryInput from "./query_input";
+import { useEffect } from "react";
 import Image from 'next/image';
+import React, { useState } from "react";
+import ReactPaginate from 'react-paginate';
+import COMMON_WORDS from "../utils/common_words";
+import Card from "../components/card";
+import QueryInput from "../components/query_input";
+import { IResult, IMatches } from "../utils/IResult";
 import logo from '../../public/ScriptSearch_New_Logo.png';
 
 const apiLink = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-api"
