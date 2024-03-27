@@ -1,5 +1,5 @@
 import { IResult } from "./IResult"
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
 type Props = {
@@ -38,6 +38,7 @@ const createMarkup = (snippet: string) => {
 const Card = ({videoInfo}: Props) => {
     const thumbnailLink =  `https://i.ytimg.com/vi/${videoInfo.video_id}/mqdefault.jpg`;
     const [modal, setModal] = useState(false);
+    const [cardLoaded, setCardLoaded] = useState(false);
 
     function openModal() {
         setModal(true);
@@ -56,8 +57,12 @@ const Card = ({videoInfo}: Props) => {
         }
     }
 
+    useEffect(() => {
+        setCardLoaded(true);
+    }, [cardLoaded])
+
     return (        
-        <div className="flex flex-col">
+        <div className={`flex flex-col transition-all ease-in duration-500 ${cardLoaded ? 'opacity-100' : 'opacity-0'}`}>
             <div onClick={openModal} className="w-80 h-80 border-2 rounded border-gray-500 p-2 m-2 transition-all ease-in-out duration-300 hover:bg-red-600 hover:text-white hover:border-red-700 hover:scale-105 cursor-pointer">
                 <Image
                         className="relative w-auto"
@@ -73,7 +78,7 @@ const Card = ({videoInfo}: Props) => {
 
         {modal &&
                 <dialog onClick={handleOverlayClick} className="fixed left-0 top-0 w-full h-full bg-black bg-opacity-50 overflow-auto z-50 backdrop-blur flex justify-center items-center">
-                    <div id = "modal" className="bg-white m-auto px-8 py-4 border-8 border-red-600 rounded-lg flex flex-col flex-wrap">
+                    <div id = "modal" className="bg-white m-auto px-8 py-4 border-8 border-red-600 rounded-lg flex flex-col flex-wrap dark:bg-black dark:text-white">
                         <p id = "modal" className="font-bold text-2xl place-self-center">Results</p>
                             {videoInfo.matches.map((result, index) => {
                                 return (

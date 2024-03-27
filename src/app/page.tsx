@@ -1,7 +1,7 @@
 'use client';
 import { IResult, IMatches } from "./IResult";
 import COMMON_WORDS from "./common_words";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactPaginate from 'react-paginate';
 import Card from "./card";
 import QueryInput from "./query_input";
@@ -16,6 +16,7 @@ export default function Home() {
     const [loading, setLoading] = useState(false);
     const [showWordLimit, setShowWordLimit] = useState(false);
     const [error, setError] = useState("");
+    const [pageLoaded, setPageLoaded] = useState(false);
 
     const itemsPerPage = 5;
     const pageCount = Math.ceil(searchResults.length / itemsPerPage);
@@ -23,6 +24,10 @@ export default function Home() {
     const [endOffset, setEndOffset] = useState(itemsPerPage);
     const [currentItems, setCurrentItems] = useState(searchResults.slice(itemOffset, endOffset));
     const [currentPage, setCurrentPage] = useState(0);
+
+    useEffect(() => {
+        setPageLoaded(true);
+    }, [pageLoaded])
 
     const handleError = (error:any) => {
         setLoading(false);
@@ -150,7 +155,7 @@ export default function Home() {
     };
     
     return (
-        <main className="flex min-h-screen flex-col items-center justify-center p-24">
+        <main className={`flex min-h-screen flex-col items-center justify-center p-24 transition-all ease-in duration-700 ${pageLoaded ? 'opacity-100' : 'opacity-0'}`}>
             <div>
                 <Image
                         className="relative invert dark:invert-0 w-64 mb-2"
