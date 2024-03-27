@@ -149,6 +149,7 @@ export default function Home() {
     const handlePageClick = (event:any) => {
         const newOffset = (event.selected * itemsPerPage) % searchResults.length;
 
+        setPageLoaded(false);
         setCurrentPage(event.selected);
         setItemOffset(newOffset);
         setEndOffset(newOffset + itemsPerPage);
@@ -254,6 +255,13 @@ export default function Home() {
                 </div>
             </>
             }
+            
+            <div className="w-11/12 my-5">
+                <p className="p-2 bg-gray-300 border-2 rounded-lg border-gray-700">Welcome to Scriptsearch! This tool
+                will allow you to search the transcripts of a specified YouTube channel or playlist.
+                </p>
+            </div>
+
         </main>
     );
 }
