@@ -103,7 +103,8 @@ export default function Home() {
                 await sleep(10000);
                 console.log('Wait finished!');
 
-                const searchResponse = await fetch(apiLink + `?query=${query}`, {
+                data["query"] = query;
+                const searchResponse = await fetch(apiLink, {
                     method: "POST", 
                     body: JSON.stringify(data),
                     headers: {
