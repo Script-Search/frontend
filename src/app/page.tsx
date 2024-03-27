@@ -66,11 +66,19 @@ export default function Home() {
         // if no URL given, search entire database just as before
         if (!url.value) {
             try {
-                const response = await fetch(apiLink + `?query=${query}`);
-                if (!response.ok) {
+                let inputData = {} as any; 
+                inputData["query"] = query;
+                const searchResponse = await fetch(apiLink, {
+                    method: "POST", 
+                    body: JSON.stringify(inputData),
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                });
+                if (!searchResponse.ok) {
                     throw "something broke :(";
                 }
-                const data = await response.json();
+                const data = await searchResponse.json();
                 console.log(data);
                 setLoading(false);
                 if (data["hits"].length == 0) {
