@@ -64,7 +64,7 @@ export default function Home() {
         }
 
         // if no URL given, search entire database just as before
-        if (!url.value) {
+        if (!url.value && query) {
             try {
                 let inputData = {} as any; 
                 inputData["query"] = query;
