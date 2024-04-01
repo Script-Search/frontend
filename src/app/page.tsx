@@ -62,15 +62,15 @@ export default function Home() {
     const backendConnect = async () => {
         let url = document.getElementById("link") as HTMLInputElement;
         let queryElement = document.getElementById("query") as HTMLInputElement;
-        let query = queryElement.value;
+        let query = queryElement.value.trim();
 
-        if(URLCache == url.value){
-            setURLCache(url.value);
-        }
-        console.log("Cache:" + URLCache + "\nValue:" + url.value);
+        // if(URLCache == url.value){
+        //     setURLCache(url.value);
+        // }
+        // console.log("Cache:" + URLCache + "\nValue:" + url.value);
 
         // Check if the query is a common word
-        if (COMMON_WORDS.includes(query.toLowerCase().trim())) {
+        if (COMMON_WORDS.includes(query.toLowerCase())) {
             handleError("Please enter a more specific query.");
             return;
         }
@@ -90,12 +90,10 @@ export default function Home() {
         // if no URL given, search entire database just as before
         if (!url.value && query) {
             try {
-                let inputData = {} as any; 
-                inputData["query"] = query;
                 setLoadingType("stage 2");
                 const searchResponse = await fetch(apiLink, {
                     method: "POST", 
-                    body: JSON.stringify(inputData),
+                    body: JSON.stringify({query: query}),
                     headers: {
                         "Content-Type": "application/json",
                     }
@@ -126,8 +124,8 @@ export default function Home() {
         // if URL given, search just that channel/playlist/video
         else if (url.value && query) {
             try {
-                const data:any = {};
-                if(!(URLCache == url.value)){
+                let data = {} as any;
+                // if(!(URLCache == url.value)){
                     setLoadingType("stage 1")
                     const response = await fetch(apiLink, {
                         method: "POST", 
@@ -139,19 +137,19 @@ export default function Home() {
                     if (!response.ok) {
                         throw "Incorrect URL, please try again.";
                     }
-                    const data = await response.json();
+                    data = await response.json();
                     console.log("First response: " + JSON.stringify(data));
                     
                     await sleep(10000);
                     console.log('Wait finished!');
-                }
+                // }
                 
                 setLoadingType("stage 2");
                 data["query"] = query;
                 setResultCache(data);
                 const searchResponse = await fetch(apiLink, {
                     method: "POST", 
-                    body: JSON.stringify(resultCache),
+                    body: JSON.stringify(data),
                     headers: {
                         "Content-Type": "application/json",
                     }
