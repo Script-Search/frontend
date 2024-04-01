@@ -14,11 +14,11 @@ export default function Home() {
     const [searchResults, setSearchResults] = useState<IResult[]>([]);
     const WORD_LIMIT = 5;
     const CHARACTER_LIMIT = 75;
-    const CACHE_SIZE = 5;
     const [loadingType, setLoadingType] = useState("");
     const [error, setError] = useState("");
     const [pageLoaded, setPageLoaded] = useState(false);
-    const [URLCache, setURLCache] = useState<string[]>([]);
+    const [URLCache, setURLCache] = useState("");
+    const [resultCache, setResultCache] = useState<any>();
 
     const itemsPerPage = 5;
     const pageCount = Math.ceil(searchResults.length / itemsPerPage);
@@ -64,14 +64,10 @@ export default function Home() {
         let queryElement = document.getElementById("query") as HTMLInputElement;
         let query = queryElement.value;
 
-        if(!URLCache.includes(url.value)){
-            if(URLCache.length >= CACHE_SIZE){
-                URLCache.shift();
-            }
-            URLCache.push(url.value);
+        if(URLCache == url.value){
+            setURLCache(url.value);
         }
-
-        console.log(URLCache);
+        console.log("Cache:" + URLCache + "\nValue:" + url.value);
 
         // Check if the query is a common word
         if (COMMON_WORDS.includes(query.toLowerCase().trim())) {
@@ -131,24 +127,31 @@ export default function Home() {
         else if (url.value && query) {
             try {
                 const data:any = {};
-                if(!URLCache.includes(url.value)){
+                if(!(URLCache == url.value)){
                     setLoadingType("stage 1")
-                    const response = await fetch(apiLink + `?url=${url.value}`);
+                    const response = await fetch(apiLink, {
+                        method: "POST", 
+                        body: JSON.stringify({url: url.value}),
+                        headers: {
+                            "Content-Type": "application/json",
+                        }
+                    });
                     if (!response.ok) {
                         throw "Incorrect URL, please try again.";
                     }
                     const data = await response.json();
                     console.log("First response: " + JSON.stringify(data));
-    
+                    
                     await sleep(10000);
                     console.log('Wait finished!');
                 }
-                data["c"]
+                
                 setLoadingType("stage 2");
                 data["query"] = query;
+                setResultCache(data);
                 const searchResponse = await fetch(apiLink, {
                     method: "POST", 
-                    body: JSON.stringify(data),
+                    body: JSON.stringify(resultCache),
                     headers: {
                         "Content-Type": "application/json",
                     }
