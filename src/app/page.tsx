@@ -5,10 +5,12 @@ import React, { useState } from "react";
 import ReactPaginate from 'react-paginate';
 import COMMON_WORDS from "../utils/common_words";
 import Card from "../components/card";
+import InMemoryCache from "../components/cache";
 import { IResult, IMatches } from "../utils/IResult";
 import logo from '../../public/ScriptSearch_New_Logo.png';
 
 const apiLink = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-api"
+const cache = new InMemoryCache();
 
 export default function Home() {
     const [searchResults, setSearchResults] = useState<IResult[]>([]);
@@ -17,8 +19,6 @@ export default function Home() {
     const [loadingType, setLoadingType] = useState("");
     const [error, setError] = useState("");
     const [pageLoaded, setPageLoaded] = useState(false);
-    const [URLCache, setURLCache] = useState("");
-    const [resultCache, setResultCache] = useState<any>();
 
     const itemsPerPage = 5;
     const pageCount = Math.ceil(searchResults.length / itemsPerPage);
@@ -64,29 +64,27 @@ export default function Home() {
         let queryElement = document.getElementById("query") as HTMLInputElement;
         let query = queryElement.value.trim();
 
-        // if(URLCache == url.value){
-        //     setURLCache(url.value);
-        // }
-        // console.log("Cache:" + URLCache + "\nValue:" + url.value);
+        let cachedURL = cache.getCache()?.url;
+        let cachedResults = cache.getCache()?.results;
 
         // Check if the query is a common word
         if (COMMON_WORDS.includes(query.toLowerCase())) {
             handleError("Please enter a more specific query.");
             return;
         }
-
+        
         // Check if the query is too long
         if (query.split(" ").length > WORD_LIMIT) {
             handleError("Please enter a query with 5 or fewer words.");
             return;
         }
-
+        
         // Check if the query has too many characters
         if(query.length > CHARACTER_LIMIT){
             handleError("Character limit exceeded. Please shorten your query.");
             return;
         }
-
+        
         // if no URL given, search entire database just as before
         if (!url.value && query) {
             try {
@@ -111,7 +109,7 @@ export default function Home() {
                     setError("");
                 }
                 setSearchResults(data["hits"]);
-
+                
                 setCurrentPage(0);
                 setItemOffset(0);
                 setEndOffset(itemsPerPage);
@@ -125,8 +123,8 @@ export default function Home() {
         else if (url.value && query) {
             try {
                 let data = {} as any;
-                // if(!(URLCache == url.value)){
-                    setLoadingType("stage 1")
+                if (!cachedURL || cachedURL !== url.value) {    // only query API if URL has changed
+                    setLoadingType("stage 1");
                     const response = await fetch(apiLink, {
                         method: "POST", 
                         body: JSON.stringify({url: url.value}),
@@ -138,15 +136,17 @@ export default function Home() {
                         throw "Incorrect URL, please try again.";
                     }
                     data = await response.json();
-                    console.log("First response: " + JSON.stringify(data));
+                    // console.log("First response: " + JSON.stringify(data));
+                    cache.setCache(url.value, data);
                     
                     await sleep(10000);
                     console.log('Wait finished!');
-                // }
+                } else {
+                    data = cachedResults;
+                }
                 
                 setLoadingType("stage 2");
                 data["query"] = query;
-                setResultCache(data);
                 const searchResponse = await fetch(apiLink, {
                     method: "POST", 
                     body: JSON.stringify(data),
@@ -158,7 +158,7 @@ export default function Home() {
                     throw "Couldn't search API";
                 }
                 const searchData = await searchResponse.json();
-                console.log("Second response: " + JSON.stringify(searchData));
+                // console.log("Second response: " + JSON.stringify(searchData));
 
                 setLoadingType("");
                 if (searchData["hits"].length == 0) {
