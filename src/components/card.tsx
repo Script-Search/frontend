@@ -57,6 +57,15 @@ const Card = ({videoInfo}: Props) => {
         }
     }
 
+    const truncateTitle = (title:string) => {
+        if(title.length > 90){
+            return title.substring(0,90) + "..."
+        }
+        else{
+            return title;
+        }
+    }
+
     useEffect(() => {
         setCardLoaded(true);
     }, [cardLoaded])
@@ -72,7 +81,7 @@ const Card = ({videoInfo}: Props) => {
                         height={37}
                         priority
                     />
-                <p className="text-xl font-bold">{videoInfo.title}</p>
+                <p className="text-xl font-bold">{truncateTitle(videoInfo.title)}</p>
                 <p className="italic">{videoInfo.channel_name}</p>
             </div> 
 

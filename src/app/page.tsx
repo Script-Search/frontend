@@ -12,10 +12,13 @@ const apiLink = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-
 
 export default function Home() {
     const [searchResults, setSearchResults] = useState<IResult[]>([]);
-    const WORD_LIMIT = 5
-    const [loading, setLoading] = useState(false);
+    const WORD_LIMIT = 5;
+    const CHARACTER_LIMIT = 75;
+    const CACHE_SIZE = 5;
+    const [loadingType, setLoadingType] = useState("");
     const [error, setError] = useState("");
     const [pageLoaded, setPageLoaded] = useState(false);
+    const [URLCache, setURLCache] = useState<string[]>([]);
 
     const itemsPerPage = 5;
     const pageCount = Math.ceil(searchResults.length / itemsPerPage);
@@ -29,7 +32,7 @@ export default function Home() {
     }, [pageLoaded])
 
     const handleError = (error:any) => {
-        setLoading(false);
+        setLoadingType("");
         setError(error);
         setSearchResults([]);
     }
@@ -39,17 +42,36 @@ export default function Home() {
     }
 
     const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && loadingType.length === 0) {
             backendConnect();
         }
     };
+
+    const loadingText = () => {
+        if(loadingType === "stage 1"){
+            return "Populating Database..."
+        }
+        else if (loadingType === "stage 2"){
+            return "Searching Database..."
+        }
+        else {
+            return "Search"
+        }
+    }
 
     const backendConnect = async () => {
         let url = document.getElementById("link") as HTMLInputElement;
         let queryElement = document.getElementById("query") as HTMLInputElement;
         let query = queryElement.value;
-        
-        setLoading(true);
+
+        if(!URLCache.includes(url.value)){
+            if(URLCache.length >= CACHE_SIZE){
+                URLCache.shift();
+            }
+            URLCache.push(url.value);
+        }
+
+        console.log(URLCache);
 
         // Check if the query is a common word
         if (COMMON_WORDS.includes(query.toLowerCase().trim())) {
@@ -63,11 +85,18 @@ export default function Home() {
             return;
         }
 
+        // Check if the query has too many characters
+        if(query.length > CHARACTER_LIMIT){
+            handleError("Character limit exceeded. Please shorten your query.");
+            return;
+        }
+
         // if no URL given, search entire database just as before
         if (!url.value && query) {
             try {
                 let inputData = {} as any; 
                 inputData["query"] = query;
+                setLoadingType("stage 2");
                 const searchResponse = await fetch(apiLink, {
                     method: "POST", 
                     body: JSON.stringify(inputData),
@@ -80,7 +109,7 @@ export default function Home() {
                 }
                 const data = await searchResponse.json();
                 console.log(data);
-                setLoading(false);
+                setLoadingType("");
                 if (data["hits"].length == 0) {
                     setError("No results.")
                 }
@@ -101,16 +130,21 @@ export default function Home() {
         // if URL given, search just that channel/playlist/video
         else if (url.value && query) {
             try {
-                const response = await fetch(apiLink + `?url=${url.value}`);
-                if (!response.ok) {
-                    throw "Incorrect URL, please try again.";
+                const data:any = {};
+                if(!URLCache.includes(url.value)){
+                    setLoadingType("stage 1")
+                    const response = await fetch(apiLink + `?url=${url.value}`);
+                    if (!response.ok) {
+                        throw "Incorrect URL, please try again.";
+                    }
+                    const data = await response.json();
+                    console.log("First response: " + JSON.stringify(data));
+    
+                    await sleep(10000);
+                    console.log('Wait finished!');
                 }
-                const data = await response.json();
-                console.log("First response: " + JSON.stringify(data));
-
-                await sleep(10000);
-                console.log('Wait finished!');
-
+                data["c"]
+                setLoadingType("stage 2");
                 data["query"] = query;
                 const searchResponse = await fetch(apiLink, {
                     method: "POST", 
@@ -125,7 +159,7 @@ export default function Home() {
                 const searchData = await searchResponse.json();
                 console.log("Second response: " + JSON.stringify(searchData));
 
-                setLoading(false);
+                setLoadingType("");
                 if (searchData["hits"].length == 0) {
                     setError("No results.")
                 }
@@ -212,8 +246,9 @@ export default function Home() {
                 id="search" 
                 onClick={() => backendConnect()} 
                 className="flex justify-center items-center border border-gray-500 rounded py-2 my-1 w-80 transition-colors ease-in-out hover:bg-red-600 hover:text-white hover:border-red-700 space-x-2"
+                disabled={loadingType.length > 0}
             >
-                {loading && (
+                {loadingType.length > 0 && (
                     <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
                     <circle
                         cx="12" cy="12" r="10"
@@ -225,7 +260,7 @@ export default function Home() {
                     ></circle>
                 </svg>
                 )}
-                <span>{loading ? "Loading..." : "Search"}</span>
+                <span>{loadingText()}</span>
             </button>
 
             {error.length != 0 &&
