@@ -6,6 +6,7 @@ type Props = {
     videoInfo: IResult;
 }
 
+// convert seconds to HH:MM:SS or MM:SS, as appropriate
 const timestampConversion = (time:number) => {
     let hours = Math.floor(time / 3600);
     let minutes = Math.floor((time % 3600) / 60);
@@ -48,15 +49,16 @@ const Card = ({videoInfo}: Props) => {
         setModal(false);
     }
 
+    // handle clicking on overlay
     function handleOverlayClick(event: React.MouseEvent) {
-        // Assuming the modal content has a specific class name 'modal-content'
-        // This checks if the clicked element or any of its parents have the 'modal-content' class
+        // check if clicked content belongs to modal
         const target = event.target as Element;
         if (!(target.id === "modal")) {
             closeModal();
         }
     }
 
+    // limit video titles to 90 characters
     const truncateTitle = (title:string) => {
         if(title.length > 90){
             return title.substring(0,90) + "..."

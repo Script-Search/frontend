@@ -6,7 +6,7 @@ import ReactPaginate from 'react-paginate';
 import COMMON_WORDS from "../utils/common_words";
 import Card from "../components/card";
 import InMemoryCache from "../components/cache";
-import { IResult, IMatches } from "../utils/IResult";
+import { IResult } from "../utils/IResult";
 import logo from '../../public/ScriptSearch_New_Logo.png';
 
 const apiLink = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-api"
@@ -31,39 +31,63 @@ export default function Home() {
         setPageLoaded(true);
     }, [pageLoaded])
 
-    const handleError = (error:any) => {
+    // generic function to handle errors
+    const handleError = (error: any) => {
+        // clears results, removes loading icon, and displays error message
         setLoadingType("");
         setError(error);
         setSearchResults([]);
     }
 
-    function sleep(ms:number) {
+    // wait function
+    function sleep(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    // make backend request when 'enter' is pressed
     const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && loadingType.length === 0) {
             backendConnect();
         }
     };
 
+    // set loading text on button depending on stage of search
     const loadingText = () => {
-        if(loadingType === "stage 1"){
-            return "Populating Database..."
+        if (loadingType === "stage 1") {
+            return "Populating Database...";
         }
-        else if (loadingType === "stage 2"){
-            return "Searching Database..."
+        else if (loadingType === "stage 2") {
+            return "Searching Database...";
         }
-        else {
-            return "Search"
-        }
+        return "Search";            // default button text
+    };
+
+    // basic steps to be performed on hits returned from search
+    function handleHits(data: { hits: IResult[] }) {
+        setLoadingType("");         // clear loading icon
+        if (!data || !data["hits"])
+            throw "Hits data was null";
+        setError((data["hits"].length === 0) ? "No results found." : "");       // inform user of empty results
+        setSearchResults(data["hits"]);         // populate results onto page
     }
 
+    // initial steps to paginate search results
+    function initPaginate(data: { hits: IResult[] }) {
+        setCurrentPage(0);
+        setItemOffset(0);
+        setEndOffset(itemsPerPage);
+        setCurrentItems(data["hits"].slice(0, itemsPerPage));
+    }
+
+    // create, process, and cache request(s) to backend
     const backendConnect = async () => {
-        let url = document.getElementById("link") as HTMLInputElement;
+        // get inputs from HTML
+        let urlElement = document.getElementById("link") as HTMLInputElement;
         let queryElement = document.getElementById("query") as HTMLInputElement;
         let query = queryElement.value.trim();
+        let url = urlElement.value;
 
+        // get cached info, if any
         let cachedURL = cache.getCache()?.url;
         let cachedResults = cache.getCache()?.results;
 
@@ -80,18 +104,19 @@ export default function Home() {
         }
         
         // Check if the query has too many characters
-        if(query.length > CHARACTER_LIMIT){
+        if (query.length > CHARACTER_LIMIT) {
             handleError("Character limit exceeded. Please shorten your query.");
             return;
         }
         
-        // if no URL given, search entire database just as before
-        if (!url.value && query) {
+        // if no URL given, search entire database
+        if (!url && query) {
             try {
                 setLoadingType("stage 2");
+                // fetch search results from API
                 const searchResponse = await fetch(apiLink, {
                     method: "POST", 
-                    body: JSON.stringify({query: query}),
+                    body: JSON.stringify({ query: query }),
                     headers: {
                         "Content-Type": "application/json",
                     }
@@ -99,57 +124,50 @@ export default function Home() {
                 if (!searchResponse.ok) {
                     throw "something broke :(";
                 }
-                const data = await searchResponse.json();
-                console.log(data);
-                setLoadingType("");
-                if (data["hits"].length == 0) {
-                    setError("No results.")
-                }
-                else {
-                    setError("");
-                }
-                setSearchResults(data["hits"]);
-                
-                setCurrentPage(0);
-                setItemOffset(0);
-                setEndOffset(itemsPerPage);
-                setCurrentItems(data["hits"].slice(0, itemsPerPage));
+                const searchData = await searchResponse.json();
+                // console.log(data);
+
+                // display and paginate results
+                handleHits(searchData);
+                initPaginate(searchData);
             } catch (e) {
                 handleError(e);
             }
         }
 
         // if URL given, search just that channel/playlist/video
-        else if (url.value && query) {
+        else if (url && query) {
             try {
-                let data = {} as any;
-                if (!cachedURL || cachedURL !== url.value) {    // only query API if URL has changed
+                let urlData = {} as any;
+                if (!cachedURL || cachedURL !== url) {    // only query API if URL has changed
                     setLoadingType("stage 1");
-                    const response = await fetch(apiLink, {
+                    // fetch URL data from API
+                    const urlResponse = await fetch(apiLink, {
                         method: "POST", 
-                        body: JSON.stringify({url: url.value}),
+                        body: JSON.stringify({ url: url }),
                         headers: {
                             "Content-Type": "application/json",
                         }
                     });
-                    if (!response.ok) {
+                    if (!urlResponse.ok) {
                         throw "Incorrect URL, please try again.";
                     }
-                    data = await response.json();
-                    // console.log("First response: " + JSON.stringify(data));
-                    cache.setCache(url.value, data);
+                    urlData = await urlResponse.json();
+                    // console.log("First response: " + JSON.stringify(urlData));
+                    cache.setCache(url, urlData);
                     
                     await sleep(10000);
                     console.log('Wait finished!');
-                } else {
-                    data = cachedResults;
+                } else {            // if no URL change, use cached data
+                    urlData = cachedResults;
                 }
                 
                 setLoadingType("stage 2");
-                data["query"] = query;
+                urlData["query"] = query;          // add query to URL data
+                // fetch search results from API
                 const searchResponse = await fetch(apiLink, {
                     method: "POST", 
-                    body: JSON.stringify(data),
+                    body: JSON.stringify(urlData),
                     headers: {
                         "Content-Type": "application/json",
                     }
@@ -160,19 +178,9 @@ export default function Home() {
                 const searchData = await searchResponse.json();
                 // console.log("Second response: " + JSON.stringify(searchData));
 
-                setLoadingType("");
-                if (searchData["hits"].length == 0) {
-                    setError("No results.")
-                }
-                else {
-                    setError("");
-                }
-                setSearchResults(searchData["hits"]);
-
-                setCurrentPage(0);
-                setItemOffset(0);
-                setEndOffset(itemsPerPage);
-                setCurrentItems(searchData["hits"].slice(0, itemsPerPage));
+                // display and paginate results
+                handleHits(searchData)
+                initPaginate(searchData);
             } catch (e) {
                 handleError(e);
             }

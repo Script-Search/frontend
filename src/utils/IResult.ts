@@ -1,4 +1,4 @@
-export interface IMatches {
+interface IMatches {
     snippet: string;
     timestamp: number;
 }

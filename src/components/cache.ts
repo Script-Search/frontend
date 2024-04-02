@@ -1,5 +1,3 @@
-// cache.ts
-
 interface CacheContent {
     url: string;
     results: {};
