@@ -10,7 +10,8 @@ import { IResult } from "../utils/IResult";
 import logo from '../../public/ScriptSearch_New_Logo.png';
 
 const apiLink = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-api"
-const cache = new InMemoryCache();
+const CACHE_SIZE: number = 5;
+const cache = new InMemoryCache(CACHE_SIZE);
 
 export default function Home() {
     const [searchResults, setSearchResults] = useState<IResult[]>([]);
@@ -81,6 +82,8 @@ export default function Home() {
 
     // create, process, and cache request(s) to backend
     const backendConnect = async () => {
+        setSearchResults([]);
+        
         // get inputs from HTML
         let urlElement = document.getElementById("link") as HTMLInputElement;
         let queryElement = document.getElementById("query") as HTMLInputElement;
@@ -88,8 +91,8 @@ export default function Home() {
         let url = urlElement.value;
 
         // get cached info, if any
-        let cachedURL = cache.getCache()?.url;
-        let cachedResults = cache.getCache()?.results;
+        let cachedURLs = cache.getUrls();
+        let cachedResults = cache.getResults();
 
         // Check if the query is a common word
         if (COMMON_WORDS.includes(query.toLowerCase())) {
@@ -139,7 +142,7 @@ export default function Home() {
         else if (url && query) {
             try {
                 let urlData = {} as any;
-                if (!cachedURL || cachedURL !== url) {    // only query API if URL has changed
+                if (!cachedURLs || !cachedURLs.includes(url)) {    // only query API if URL has changed
                     setLoadingType("stage 1");
                     // fetch URL data from API
                     const urlResponse = await fetch(apiLink, {
@@ -154,12 +157,13 @@ export default function Home() {
                     }
                     urlData = await urlResponse.json();
                     // console.log("First response: " + JSON.stringify(urlData));
-                    cache.setCache(url, urlData);
-                    
+                    cache.push(url, urlData);
+
                     await sleep(10000);
                     console.log('Wait finished!');
                 } else {            // if no URL change, use cached data
-                    urlData = cachedResults;
+                    urlData = cache.findResult(url);
+                    cache.pivot(url);
                 }
                 
                 setLoadingType("stage 2");
