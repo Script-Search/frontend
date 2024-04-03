@@ -21,7 +21,7 @@ export default function Home() {
     const [error, setError] = useState("");
     const [pageLoaded, setPageLoaded] = useState(false);
 
-    const itemsPerPage = 5;
+    const itemsPerPage = 10;
     const pageCount = Math.ceil(searchResults.length / itemsPerPage);
     const [itemOffset, setItemOffset] = useState(0);
     const [endOffset, setEndOffset] = useState(itemsPerPage);
@@ -219,7 +219,7 @@ export default function Home() {
     };
     
     return (
-        <main className={`flex min-h-screen flex-col items-center justify-center p-24 transition-all ease-in duration-700 ${pageLoaded ? 'opacity-100' : 'opacity-0'}`}>
+        <main className={`flex min-h-screen flex-col items-center justify-center pt-10 pb-24 transition-all ease-in duration-700 ${pageLoaded ? 'opacity-100' : 'opacity-0'}`}>
             <div>
                 <Image
                         className="relative invert dark:invert-0 w-64 mb-2"
@@ -294,7 +294,7 @@ export default function Home() {
                     nextLabel=">"
                     forcePage={currentPage}
                     onPageChange={handlePageClick}
-                    pageRangeDisplayed={5}
+                    pageRangeDisplayed={3}
                     marginPagesDisplayed={2}
                     pageCount={pageCount}
                     previousLabel="<"
@@ -315,9 +315,20 @@ export default function Home() {
             }
             
             <div className="w-11/12 my-5">
-                <p className="p-2 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">Welcome to ScriptSearch! This tool
-                will allow you to search the transcripts of a specified YouTube channel or playlist.
-                </p>
+                <ul className="marker:text-red-600 list-disc list-inside p-2 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">
+                <b className="text-red-600">Welcome to ScriptSearch! This tool will allow you to search the transcripts of a specified YouTube channel or playlist.</b>
+                <li className="ml-5">To search a specific channel or playlist for a certain keyword, type the link of the channel/playlist in question in the first box, type the query in the second box, and click the search button or press the enter key</li>
+                <li className="ml-5">To search our entire database for a certain keyword, perform the above procedure but leave the first box blank</li>
+                <li className="ml-5">Once the search is complete, you can click on any of the videos to see a list of all timestamps where that word appears in the transcript of that video accompanied by a timestamped YouTube link that takes you directly to the point at which the word is said</li>
+                <br></br>
+                <b className="text-red-600">There are a number of restrictions that must be considered to get the most out of our application:</b>
+                <li className="ml-5">Our application only searches for exact matches of the query searched for (i.e. searching "script" will not result in "scriptsearch")</li>
+                <li className="ml-5">Only the most recent 250 videos of the specified channel/playlist will be searched and returned</li>
+                <li className="ml-5">Only English language transcripts are searched by our application</li>
+                <li className="ml-5">Queries must be limited to  5 words or less and shorter than 75 characters</li>
+                <li className="ml-5">Searching with special characters (!, @, *, etc.) is allowed, but discouraged, as it may result in unexpected searching behavior</li>
+                <li className="ml-5">Searching common words such as “the” or “a” is not allowed</li>
+                </ul>
             </div>
 
         </main>
