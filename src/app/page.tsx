@@ -322,12 +322,12 @@ export default function Home() {
                 <li className="ml-5">Once the search is complete, you can click on any of the videos to see a list of all timestamps where that word appears in the transcript of that video accompanied by a timestamped YouTube link that takes you directly to the point at which the word is said</li>
                 <br></br>
                 <b className="text-red-600">There are a number of restrictions that must be considered to get the most out of our application:</b>
-                <li className="ml-5">Our application only searches for exact matches of the query searched for (i.e. searching "script" will not result in "scriptsearch")</li>
+                <li className="ml-5">Our application only searches for exact matches of the query searched for (i.e. searching 'script' will not result in 'scriptsearch')</li>
                 <li className="ml-5">Only the most recent 250 videos of the specified channel/playlist will be searched and returned</li>
                 <li className="ml-5">Only English language transcripts are searched by our application</li>
                 <li className="ml-5">Queries must be limited to  5 words or less and shorter than 75 characters</li>
                 <li className="ml-5">Searching with special characters (!, @, *, etc.) is allowed, but discouraged, as it may result in unexpected searching behavior</li>
-                <li className="ml-5">Searching common words such as “the” or “a” is not allowed</li>
+                <li className="ml-5">Searching common words such as 'the' or 'a' is not allowed</li>
                 </ul>
             </div>
 
