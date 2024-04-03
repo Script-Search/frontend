@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import Image from 'next/image';
 import React, { useState } from "react";
 import ReactPaginate from 'react-paginate';
-import COMMON_WORDS from "../utils/common_words";
+import { COMMON_WORDS, SPECIAL_CHARS, WORD_LIMIT, CHARACTER_LIMIT } from "../utils/validation";
 import Card from "../components/card";
 import InMemoryCache from "../components/cache";
 import { IResult } from "../utils/IResult";
@@ -15,8 +15,6 @@ const cache = new InMemoryCache(CACHE_SIZE);
 
 export default function Home() {
     const [searchResults, setSearchResults] = useState<IResult[]>([]);
-    const WORD_LIMIT = 5;
-    const CHARACTER_LIMIT = 75;
     const [loadingType, setLoadingType] = useState("");
     const [error, setError] = useState("");
     const [pageLoaded, setPageLoaded] = useState(false);
@@ -80,37 +78,47 @@ export default function Home() {
         setCurrentItems(data["hits"].slice(0, itemsPerPage));
     }
 
-    // create, process, and cache request(s) to backend
-    const backendConnect = async () => {
-        setSearchResults([]);
-        
-        // get inputs from HTML
-        let urlElement = document.getElementById("link") as HTMLInputElement;
-        let queryElement = document.getElementById("query") as HTMLInputElement;
-        let query = queryElement.value.trim();
-        let url = urlElement.value;
-
-        // get cached info, if any
-        let cachedURLs = cache.getUrls();
-        let cachedResults = cache.getResults();
+    function validateQuery(query: string) {
+        // drop punctuation from query (breaks search)
+        const regex = new RegExp(`[${SPECIAL_CHARS.join('\\')}]`, 'g');
+        query = query.replace(regex, '');
 
         // Check if the query is a common word
-        if (COMMON_WORDS.includes(query.toLowerCase())) {
+        if (COMMON_WORDS.includes(query)) {
             handleError("Please enter a more specific query.");
             return;
         }
-        
+
         // Check if the query is too long
         if (query.split(" ").length > WORD_LIMIT) {
             handleError("Please enter a query with 5 or fewer words.");
             return;
         }
-        
+
         // Check if the query has too many characters
         if (query.length > CHARACTER_LIMIT) {
             handleError("Character limit exceeded. Please shorten your query.");
             return;
         }
+
+        return query;
+    }
+
+    // create, process, and cache request(s) to backend
+    const backendConnect = async () => {
+        setSearchResults([]);
+
+        // get inputs from HTML
+        let urlElement = document.getElementById("link") as HTMLInputElement;
+        let queryElement = document.getElementById("query") as HTMLInputElement;
+        let tempQuery = queryElement.value.trim().toLowerCase();
+        let url = urlElement.value;
+
+        // sanitize and validate query
+        let query = validateQuery(tempQuery);
+
+        // get cached info, if any
+        let cachedURLs = cache.getUrls();
         
         // if no URL given, search entire database
         if (!url && query) {
