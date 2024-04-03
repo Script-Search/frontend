@@ -49,7 +49,7 @@ const Card = ({videoInfo}: Props) => {
         setModal(false);
     }
 
-    // handle clicking on overlay
+    // close modal if clicked outside
     function handleOverlayClick(event: React.MouseEvent) {
         // check if clicked content belongs to modal
         const target = event.target as Element;
@@ -57,6 +57,13 @@ const Card = ({videoInfo}: Props) => {
             closeModal();
         }
     }
+
+    // close modal if escape pressed
+    const handleKeyPress = (e: KeyboardEvent) => {
+        if (e.key === 'Escape' && modal) {
+            closeModal();
+        }
+    };
 
     // limit video titles to 90 characters
     const truncateTitle = (title:string) => {
@@ -71,6 +78,14 @@ const Card = ({videoInfo}: Props) => {
     useEffect(() => {
         setCardLoaded(true);
     }, [cardLoaded])
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyPress);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [modal]);
 
     return (        
         <div className={`flex flex-col transition-all ease-in duration-500 ${cardLoaded ? 'opacity-100' : 'opacity-0'}`}>
