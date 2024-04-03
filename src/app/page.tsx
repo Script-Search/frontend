@@ -82,6 +82,8 @@ export default function Home() {
         // drop punctuation from query (breaks search)
         const regex = new RegExp(`[${SPECIAL_CHARS.join('\\')}]`, 'g');
         query = query.replace(regex, '');
+        // replace + with " plus" to catch certain relevant edge cases
+        query = query.replace(/\+/g, " plus");
 
         // Check if the query is a common word
         if (COMMON_WORDS.includes(query)) {
@@ -325,16 +327,15 @@ export default function Home() {
             <div className="w-11/12 my-5">
                 <ul className="marker:text-red-600 list-disc list-inside p-2 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">
                 <b className="text-red-600">Welcome to ScriptSearch! This tool will allow you to search the transcripts of a specified YouTube channel or playlist.</b>
-                <li className="ml-5">To search a specific channel or playlist for a certain keyword, type the link of the channel/playlist in question in the first box, type the query in the second box, and click the search button or press the enter key</li>
-                <li className="ml-5">To search our entire database for a certain keyword, perform the above procedure but leave the first box blank</li>
-                <li className="ml-5">Once the search is complete, you can click on any of the videos to see a list of all timestamps where that word appears in the transcript of that video accompanied by a timestamped YouTube link that takes you directly to the point at which the word is said</li>
+                <li className="ml-5">To search a specific channel or playlist for a certain phrase, give us the link of the channel/playlist in question in the first box, then enter your query in the second box.</li>
+                <li className="ml-5">To search our entire database for a certain phrase, just enter your search query.</li>
+                <li className="ml-5">When the search is complete, you can click on any of the resulting videos to see all transcript matches and an appropriately timestamped link.</li>
                 <br></br>
                 <b className="text-red-600">There are a number of restrictions that must be considered to get the most out of our application:</b>
                 <li className="ml-5">Our application only searches for exact matches of the query searched for (i.e. searching &apos;script&apos; will not result in &apos;scriptsearch&apos;)</li>
-                <li className="ml-5">Only the most recent 250 videos of the specified channel/playlist will be searched and returned</li>
+                <li className="ml-5">We only search the 250 most recent videos in the link provided, and our search will return at most 250 results.</li>
                 <li className="ml-5">Only English language transcripts are searched by our application</li>
                 <li className="ml-5">Queries must be limited to  5 words or less and shorter than 75 characters</li>
-                <li className="ml-5">Searching with special characters (!, @, *, etc.) is allowed, but discouraged, as it may result in unexpected searching behavior</li>
                 <li className="ml-5">Searching common words such as &apos;the&apos; or &apos;a&apos; is not allowed</li>
                 </ul>
             </div>
