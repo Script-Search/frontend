@@ -16,6 +16,7 @@ const cache = new InMemoryCache(CACHE_SIZE);
 export default function Home() {
     const [searchResults, setSearchResults] = useState<IResult[]>([]);
     const [loadingType, setLoadingType] = useState("");
+    const SLEEP_MS = 10000;
     const [error, setError] = useState("");
     const [pageLoaded, setPageLoaded] = useState(false);
 
@@ -28,7 +29,15 @@ export default function Home() {
 
     useEffect(() => {
         setPageLoaded(true);
-    }, [pageLoaded])
+    }, [pageLoaded]);
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyPress);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+    }, []);
 
     // generic function to handle errors
     const handleError = (error: any) => {
@@ -44,7 +53,7 @@ export default function Home() {
     }
 
     // make backend request when 'enter' is pressed
-    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyPress = (e: KeyboardEvent) => {
         if (e.key === 'Enter' && loadingType.length === 0) {
             backendConnect();
         }
@@ -106,6 +115,68 @@ export default function Home() {
         return query;
     }
 
+    // get URL data from API
+    async function urlFetch(url: string) {
+        // get cached info, if any
+        let cachedURLs = cache.getUrls();
+        try {
+            let urlData = {} as any;
+            if (!cachedURLs || !cachedURLs.includes(url)) {    // only query API if URL has changed
+                setLoadingType("stage 1");
+                // fetch URL data from API
+                const urlResponse = await fetch(apiLink, {
+                    method: "POST", 
+                    body: JSON.stringify({ url: url }),
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                });
+                if (!urlResponse.ok) {
+                    throw "Incorrect URL, please try again.";
+                }
+                urlData = await urlResponse.json();
+                // console.log("First response: " + JSON.stringify(urlData));
+                cache.push(url, urlData);
+
+                await sleep(SLEEP_MS);
+                console.log('Wait finished!');
+            } else {            // if no URL change, use cached data
+                urlData = cache.findResult(url);
+                cache.pivot(url);
+            }
+            return urlData;
+        } catch (e) {
+            handleError(e);
+        }
+    }
+
+    // search database for query, with optional URL data if applicable
+    async function queryFetch(query: string, urlData: any | null) {
+        try {
+            let dataSend = (!urlData) ? { query: query } : urlData;
+            setLoadingType("stage 2");
+            // fetch search results from API
+            const searchResponse = await fetch(apiLink, {
+                method: "POST", 
+                body: JSON.stringify(dataSend),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            if (!searchResponse.ok) {
+                throw "Search failed :(";
+            }
+            const searchData = await searchResponse.json();
+            // console.log(data);
+
+            // display and paginate results
+            handleHits(searchData);
+            initPaginate(searchData);
+        } catch (e) {
+            handleError(e);
+        }
+    }
+    
     // create, process, and cache request(s) to backend
     const backendConnect = async () => {
         setSearchResults([]);
@@ -118,88 +189,26 @@ export default function Home() {
 
         // sanitize and validate query
         let query = validateQuery(tempQuery);
-
-        // get cached info, if any
-        let cachedURLs = cache.getUrls();
         
         // if no URL given, search entire database
         if (!url && query) {
-            try {
-                setLoadingType("stage 2");
-                // fetch search results from API
-                const searchResponse = await fetch(apiLink, {
-                    method: "POST", 
-                    body: JSON.stringify({ query: query }),
-                    headers: {
-                        "Content-Type": "application/json",
-                    }
-                });
-                if (!searchResponse.ok) {
-                    throw "something broke :(";
-                }
-                const searchData = await searchResponse.json();
-                // console.log(data);
-
-                // display and paginate results
-                handleHits(searchData);
-                initPaginate(searchData);
-            } catch (e) {
-                handleError(e);
-            }
+            queryFetch(query, null);
         }
 
         // if URL given, search just that channel/playlist/video
         else if (url && query) {
-            try {
-                let urlData = {} as any;
-                if (!cachedURLs || !cachedURLs.includes(url)) {    // only query API if URL has changed
-                    setLoadingType("stage 1");
-                    // fetch URL data from API
-                    const urlResponse = await fetch(apiLink, {
-                        method: "POST", 
-                        body: JSON.stringify({ url: url }),
-                        headers: {
-                            "Content-Type": "application/json",
-                        }
-                    });
-                    if (!urlResponse.ok) {
-                        throw "Incorrect URL, please try again.";
-                    }
-                    urlData = await urlResponse.json();
-                    // console.log("First response: " + JSON.stringify(urlData));
-                    cache.push(url, urlData);
-
-                    await sleep(10000);
-                    console.log('Wait finished!');
-                } else {            // if no URL change, use cached data
-                    urlData = cache.findResult(url);
-                    cache.pivot(url);
-                }
-                
-                setLoadingType("stage 2");
-                urlData["query"] = query;          // add query to URL data
-                // fetch search results from API
-                const searchResponse = await fetch(apiLink, {
-                    method: "POST", 
-                    body: JSON.stringify(urlData),
-                    headers: {
-                        "Content-Type": "application/json",
-                    }
-                });
-                if (!searchResponse.ok) {
-                    throw "Couldn't search API";
-                }
-                const searchData = await searchResponse.json();
-                // console.log("Second response: " + JSON.stringify(searchData));
-
-                // display and paginate results
-                handleHits(searchData)
-                initPaginate(searchData);
-            } catch (e) {
-                handleError(e);
-            }
+            let urlData = await urlFetch(url) as any;
+            
+            urlData["query"] = query;          // add query to URL data
+            queryFetch(query, urlData);
         }
 
+        // if only URL given, ingest transcripts into database
+        else if (url && !query) {
+            urlFetch(url);
+        }
+
+        // no query given, so nothing to be done
         else {
             handleError("Please enter a query.");
         }
@@ -249,7 +258,6 @@ export default function Home() {
                 <input 
                     type="text" 
                     id="link"
-                    onKeyUp={handleKeyPress}
                     placeholder="Enter a video/channel/playlist link" 
                     className="border rounded border-gray-500 p-2 my-1 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     />
@@ -259,7 +267,6 @@ export default function Home() {
                 <input 
                     type="text" 
                     id="query"
-                    onKeyUp={handleKeyPress}
                     placeholder="Enter a query"
                     className="border rounded border-gray-500 p-2 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                 />
@@ -329,14 +336,15 @@ export default function Home() {
                 <b className="text-red-600">Welcome to ScriptSearch! This tool will allow you to search the transcripts of a specified YouTube channel or playlist.</b>
                 <li className="ml-5">To search a specific channel or playlist for a certain phrase, give us the link of the channel/playlist in question in the first box, then enter your query in the second box.</li>
                 <li className="ml-5">To search our entire database for a certain phrase, just enter your search query.</li>
-                <li className="ml-5">When the search is complete, you can click on any of the resulting videos to see all transcript matches and an appropriately timestamped link.</li>
+                <li className="ml-5">When the search is complete, you can click on any of the resulting videos to see all transcript matches and a corresponding timestamped link.</li>
                 <br></br>
                 <b className="text-red-600">There are a number of restrictions that must be considered to get the most out of our application:</b>
-                <li className="ml-5">Our application only searches for exact matches of the query searched for (i.e. searching &apos;script&apos; will not result in &apos;scriptsearch&apos;)</li>
+                <li className="ml-5">Our search ignores case, and queries are matched <em>exactly</em> with portions of the transcript.</li>
+                <li className="ml-5">When providing a channel or playlist link, it must be a direct YouTube link (i.e. &apos;youtube.com&apos; or &apos;youtu.be&apos;, NOT tinyurls or shortened links).</li>
                 <li className="ml-5">We only search the 250 most recent videos in the link provided, and our search will return at most 250 results.</li>
-                <li className="ml-5">Only English language transcripts are searched by our application</li>
-                <li className="ml-5">Queries must be limited to  5 words or less and shorter than 75 characters</li>
-                <li className="ml-5">Searching common words such as &apos;the&apos; or &apos;a&apos; is not allowed</li>
+                <li className="ml-5">Only English language transcripts are searched by our application.</li>
+                <li className="ml-5">Queries must be 5 words or less and shorter than 75 characters.</li>
+                <li className="ml-5">Searching common words such as &apos;the&apos; or &apos;a&apos; is not allowed.</li>
                 </ul>
             </div>
 
