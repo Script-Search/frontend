@@ -116,11 +116,11 @@ export default function Home() {
     }
 
     // get URL data from API
-    async function urlFetch(url: string) {
+    async function urlFetch(url: string, shouldSleep: boolean = true) {
         // get cached info, if any
         let cachedURLs = cache.getUrls();
+        let urlData = {} as any;
         try {
-            let urlData = {} as any;
             if (!cachedURLs || !cachedURLs.includes(url)) {    // only query API if URL has changed
                 setLoadingType("stage 1");
                 // fetch URL data from API
@@ -138,16 +138,19 @@ export default function Home() {
                 // console.log("First response: " + JSON.stringify(urlData));
                 cache.push(url, urlData);
 
-                await sleep(SLEEP_MS);
-                console.log('Wait finished!');
+                if (shouldSleep) {
+                    await sleep(SLEEP_MS);
+                    console.log('Wait finished!');
+                }
             } else {            // if no URL change, use cached data
                 urlData = cache.findResult(url);
                 cache.pivot(url);
             }
-            return urlData;
         } catch (e) {
+            urlData = null;
             handleError(e);
         }
+        return urlData;
     }
 
     // search database for query, with optional URL data if applicable
@@ -184,11 +187,11 @@ export default function Home() {
         // get inputs from HTML
         let urlElement = document.getElementById("link") as HTMLInputElement;
         let queryElement = document.getElementById("query") as HTMLInputElement;
-        let tempQuery = queryElement.value.trim().toLowerCase();
+        let rawQuery = queryElement.value.trim().toLowerCase();
         let url = urlElement.value;
 
         // sanitize and validate query
-        let query = validateQuery(tempQuery);
+        let query = validateQuery(rawQuery);
         
         // if no URL given, search entire database
         if (!url && query) {
@@ -198,14 +201,17 @@ export default function Home() {
         // if URL given, search just that channel/playlist/video
         else if (url && query) {
             let urlData = await urlFetch(url) as any;
-            
-            urlData["query"] = query;          // add query to URL data
-            queryFetch(query, urlData);
+            if (urlData) {
+                urlData["query"] = query;          // add query to URL data
+                queryFetch(query, urlData);
+            }
         }
 
         // if only URL given, ingest transcripts into database
         else if (url && !query) {
-            urlFetch(url);
+            let temp = await urlFetch(url, false) as any;
+            if (temp)
+                handleError("The video(s) in your URL have been populated into the database.");
         }
 
         // no query given, so nothing to be done
