@@ -16,7 +16,7 @@ const cache = new InMemoryCache(CACHE_SIZE);
 export default function Home() {
     const [searchResults, setSearchResults] = useState<IResult[]>([]);
     const [loadingType, setLoadingType] = useState("");
-    const SLEEP_MS = 10000;
+    const SLEEP_MS = 6500;
     const [error, setError] = useState("");
     const [pageLoaded, setPageLoaded] = useState(false);
 
