@@ -96,20 +96,17 @@ export default function Home() {
 
         // Check if the query is a common word
         if (COMMON_WORDS.includes(query)) {
-            handleError("Please enter a more specific query.");
-            return;
+            throw "Please enter a more specific query.";
         }
 
         // Check if the query is too long
         if (query.split(" ").length > WORD_LIMIT) {
-            handleError("Please enter a query with 5 or fewer words.");
-            return;
+            throw "Please enter a query with 5 or fewer words.";
         }
 
         // Check if the query has too many characters
         if (query.length > CHARACTER_LIMIT) {
-            handleError("Character limit exceeded. Please shorten your query.");
-            return;
+            throw "Character limit exceeded. Please shorten your query.";
         }
 
         return query;
@@ -182,16 +179,22 @@ export default function Home() {
     
     // create, process, and cache request(s) to backend
     const backendConnect = async () => {
-        setSearchResults([]);
+        handleError("");
 
         // get inputs from HTML
         let urlElement = document.getElementById("link") as HTMLInputElement;
         let queryElement = document.getElementById("query") as HTMLInputElement;
         let rawQuery = queryElement.value.trim().toLowerCase();
         let url = urlElement.value;
+        let query: any;
 
-        // sanitize and validate query
-        let query = validateQuery(rawQuery);
+        try {
+            // sanitize and validate query
+            query = validateQuery(rawQuery);
+        } catch (e) {
+            handleError(e);
+            return;
+        }
         
         // if no URL given, search entire database
         if (!url && query) {
