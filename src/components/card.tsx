@@ -71,7 +71,18 @@ const Card = ({videoInfo}: Props) => {
             return title.substring(0,90) + "..."
         }
         else{
-            return title;
+            let trimmedTitle = "";
+            let words = title.split(" ");
+            for(let i = 0; i < words.length; i++){
+                if(words[i].length > 25){
+                    trimmedTitle = trimmedTitle + " " + words[i].substring(0, 22) + "...";
+                }
+                else{
+                    trimmedTitle = trimmedTitle + " " + words[i]
+                }
+            }
+    
+            return trimmedTitle;
         }
     }
 
