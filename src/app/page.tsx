@@ -13,7 +13,7 @@ const apiLink = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-
 const CACHE_SIZE: number = 5;
 const cache = new InMemoryCache(CACHE_SIZE);
 
-export default function Home() {
+function Home() {
     const [searchResults, setSearchResults] = useState<IResult[]>([]);
     const [loadingType, setLoadingType] = useState("");
     const SLEEP_MS = 6500;
@@ -360,3 +360,5 @@ export default function Home() {
         </main>
     );
 }
+
+export default Home;

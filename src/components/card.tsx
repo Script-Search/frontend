@@ -133,4 +133,4 @@ const Card = ({videoInfo}: Props) => {
         </div>
     )   
 };
-export {Card, timestampConversion};
+export {Card, timestampConversion, createMarkup};
