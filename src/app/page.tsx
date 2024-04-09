@@ -4,7 +4,7 @@ import Image from 'next/image';
 import React, { useState } from "react";
 import ReactPaginate from 'react-paginate';
 import { COMMON_WORDS, SPECIAL_CHARS, WORD_LIMIT, CHARACTER_LIMIT } from "../utils/validation";
-import Card from "../components/card";
+import { Card } from "../components/card";
 import InMemoryCache from "../components/cache";
 import { IResult } from "../utils/IResult";
 import logo from '../../public/ScriptSearch_New_Logo.png';

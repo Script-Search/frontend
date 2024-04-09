@@ -133,4 +133,4 @@ const Card = ({videoInfo}: Props) => {
         </div>
     )   
 };
-export default Card;
+export {Card, timestampConversion};
