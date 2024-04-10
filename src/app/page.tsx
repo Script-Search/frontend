@@ -20,7 +20,7 @@ export default function Home() {
     const [error, setError] = useState("");
     const [pageLoaded, setPageLoaded] = useState(false);
 
-    const itemsPerPage = 10;
+    const itemsPerPage = 12;
     const pageCount = Math.ceil(searchResults.length / itemsPerPage);
     const [itemOffset, setItemOffset] = useState(0);
     const [endOffset, setEndOffset] = useState(itemsPerPage);

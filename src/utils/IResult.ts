@@ -8,5 +8,7 @@ export interface IResult {
     title: string;
     channel_id: string;
     channel_name: string;
+    upload_date: number;
+    duration: number;
     matches: IMatches[];
 }

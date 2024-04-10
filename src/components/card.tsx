@@ -65,25 +65,9 @@ const Card = ({videoInfo}: Props) => {
         }
     };
 
-    // limit video titles to 90 characters
-    const truncateTitle = (title:string) => {
-        if(title.length > 90){
-            return title.substring(0,90) + "..."
-        }
-        else{
-            let trimmedTitle = "";
-            let words = title.split(" ");
-            for(let i = 0; i < words.length; i++){
-                if(words[i].length > 25){
-                    trimmedTitle = trimmedTitle + " " + words[i].substring(0, 22) + "...";
-                }
-                else{
-                    trimmedTitle = trimmedTitle + " " + words[i]
-                }
-            }
-    
-            return trimmedTitle;
-        }
+    const dateConversion = (date: number) => {
+        let dateObj = new Date(date);
+        return dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     }
 
     useEffect(() => {
@@ -109,8 +93,9 @@ const Card = ({videoInfo}: Props) => {
                         height={37}
                         priority
                     />
-                <p className="text-xl font-bold">{truncateTitle(videoInfo.title)}</p>
-                <p className="italic">{videoInfo.channel_name}</p>
+                <p className="text-xl font-bold line-clamp-2">{videoInfo.title}</p>
+                <p className="italic line-clamp-1">{videoInfo.channel_name}</p>
+                <p className="relative italic line-clamp-1">{videoInfo.matches.length} match(es) &#8226; Uploaded on {dateConversion(videoInfo.upload_date)}</p>
             </div> 
 
             <dialog onClick={handleOverlayClick} className={`fixed left-0 top-0 w-full h-full bg-black bg-opacity-50 overflow-auto z-50 backdrop-blur flex justify-center items-center transition-all ease-in-out duration-300 ${modal ? 'visible opacity-100' : 'invisible opacity-0'}`}>
