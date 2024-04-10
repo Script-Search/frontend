@@ -22,6 +22,16 @@ const timestampConversion = (time:number) => {
     }
 }
 
+// convert date to MM/DD/YYYY
+const dateConversion = (date: number) => {
+    let strDate = date.toString();
+    let year = strDate.slice(0, 4);
+    let month = strDate.slice(4, 6);
+    let day = strDate.slice(6, 8);
+
+    return `${month}/${day}/${year}`;
+}
+
 const createMarkup = (snippet: string) => {
     // Split the string on "mark", then map over the pieces
     let markExpr= /<\/?mark>/gi
@@ -65,11 +75,6 @@ const Card = ({videoInfo}: Props) => {
         }
     };
 
-    const dateConversion = (date: number) => {
-        let dateObj = new Date(date);
-        return dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    }
-
     useEffect(() => {
         setCardLoaded(true);
     }, [cardLoaded])
@@ -95,7 +100,7 @@ const Card = ({videoInfo}: Props) => {
                     />
                 <p className="text-xl font-bold line-clamp-2">{videoInfo.title}</p>
                 <p className="italic line-clamp-1">{videoInfo.channel_name}</p>
-                <p className="relative italic line-clamp-1">{videoInfo.matches.length} match(es) &#8226; Uploaded on {dateConversion(videoInfo.upload_date)}</p>
+                <p className="relative italic line-clamp-1">{videoInfo.matches.length} match(es) &#8226; Uploaded {dateConversion(videoInfo.upload_date)}</p>
             </div> 
 
             <dialog onClick={handleOverlayClick} className={`fixed left-0 top-0 w-full h-full bg-black bg-opacity-50 overflow-auto z-50 backdrop-blur flex justify-center items-center transition-all ease-in-out duration-300 ${modal ? 'visible opacity-100' : 'invisible opacity-0'}`}>
