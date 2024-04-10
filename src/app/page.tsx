@@ -19,6 +19,8 @@ export default function Home() {
     const SLEEP_MS = 6500;
     const [error, setError] = useState("");
     const [pageLoaded, setPageLoaded] = useState(false);
+    const [queryToolTip, setQueryToolTip] = useState(false);
+    const [urlToolTip, setUrlToolTip] = useState(false);
 
     const itemsPerPage = 12;
     const pageCount = Math.ceil(searchResults.length / itemsPerPage);
@@ -96,6 +98,10 @@ export default function Home() {
 
         // Check if the query is a common word
         if (COMMON_WORDS.includes(query)) {
+            throw "Please enter a more specific query.";
+        }
+        // Check if entire query is common words
+        if (query.split(" ").every(word => COMMON_WORDS.includes(word))) {
             throw "Please enter a more specific query.";
         }
 
@@ -263,23 +269,56 @@ export default function Home() {
                 <p className="text-2xl before:content-['ScriptSearch'] before:text-red-600 before:font-bold before:"> - YouTube Transcript Search</p>
             </div>
 
-            <div className="">
+            <div className="justify-center relative">
                 <input 
                     type="text" 
                     id="link"
                     placeholder="Enter a video/channel/playlist link" 
                     className="border rounded border-gray-500 p-2 my-1 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                    // onMouseEnter={() => setUrlToolTip(true)}
+                    // onMouseLeave={() => setUrlToolTip(false)}
+                    onFocus={() => setUrlToolTip(true)}
+                    onBlur={() => setUrlToolTip(false)}
                     />
+                {urlToolTip && (
+                    <div className="tooltip-content bg-gray-700 text-white p-2 rounded absolute left-full ml-3 top-1/2 transform -translate-y-1/2 min-w-max max-w-xs">
+                        <ul className="marker:text-red-600 list-disc list-inside p-1 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">
+                            <b className="text-red-600">URL Help</b>
+                            <li className="ml-2 mr-2"><em>English</em> transcripts only</li>
+                            <li className="ml-2 mr-2">Whole URL needed for playlists/channels</li>
+                            <li className="ml-2 mr-2">Must use direct YouTube link (not shortened URLs)</li>
+                            <li className="ml-2 mr-2">250 most recent videos processed</li>
+                            <li className="ml-2 mr-2">If no link provided, whole database searched</li>
+                        </ul>
+                    </div>
+                )}
             </div>
 
-            <div className="justify-center">
+            <div className="justify-center relative">
                 <input 
                     type="text" 
                     id="query"
                     placeholder="Enter a query"
                     className="border rounded border-gray-500 p-2 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                />
+                    // onMouseEnter={() => setQueryToolTip(true)}
+                    // onMouseLeave={() => setQueryToolTip(false)}
+                    onFocus={() => setQueryToolTip(true)}
+                    onBlur={() => setQueryToolTip(false)}
+                    />
+                {queryToolTip && (
+                    <div className="tooltip-content bg-gray-700 text-white p-2 rounded absolute left-full ml-3 top-1/2 transform -translate-y-1/2 min-w-max max-w-xs">
+                        <ul className="marker:text-red-600 list-disc list-inside p-1 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">
+                            <b className="text-red-600">Query Help</b>
+                            <li className="ml-2 mr-2">Max 5 words, 75 characters</li>
+                            <li className="ml-2 mr-2">Queries must be exactly matched in transcript</li>
+                            <li className="ml-2 mr-2">Common words (i.e. &apos;the&apos;, &apos;am&apos;) alone may not be searched</li>
+                            <li className="ml-2 mr-2">Special characters (except apostrophes) ignored</li>
+                            <li className="ml-2 mr-2">Search is case insensitive</li>
+                        </ul>
+                    </div>
+                )}
             </div>
+
 
             <button 
                 id="search" 
@@ -346,14 +385,14 @@ export default function Home() {
                 <li className="ml-5">To search a specific channel or playlist for a certain phrase, give us the link of the channel/playlist in question in the first box, then enter your query in the second box.</li>
                 <li className="ml-5">To search our entire database for a certain phrase, just enter your search query.</li>
                 <li className="ml-5">When the search is complete, you can click on any of the resulting videos to see all transcript matches and a corresponding timestamped link.</li>
-                <br></br>
+                {/* <br></br>
                 <b className="text-red-600">There are a number of restrictions that must be considered to get the most out of our application:</b>
                 <li className="ml-5">Our search ignores case, and queries are matched <em>exactly</em> with portions of the transcript.</li>
                 <li className="ml-5">When providing a channel or playlist link, it must be a direct YouTube link (i.e. &apos;youtube.com&apos; or &apos;youtu.be&apos;, NOT tinyurls or shortened links).</li>
                 <li className="ml-5">We only search the 250 most recent videos in the link provided, and our search will return at most 250 results.</li>
                 <li className="ml-5">Only English language transcripts are searched by our application.</li>
                 <li className="ml-5">Queries must be 5 words or less and shorter than 75 characters.</li>
-                <li className="ml-5">Searching common words such as &apos;the&apos; or &apos;a&apos; is not allowed.</li>
+                <li className="ml-5">Searching common words such as &apos;the&apos; or &apos;a&apos; is not allowed.</li> */}
                 </ul>
             </div>
 
