@@ -281,14 +281,14 @@ export default function Home() {
                     onBlur={() => setUrlToolTip(false)}
                     />
                 {urlToolTip && (
-                    <div className="tooltip-content bg-gray-700 text-white p-2 rounded absolute left-full ml-3 top-1/2 transform -translate-y-1/2 min-w-max max-w-xs">
+                    <div className="tooltip-content bg-gray-700 p-0 rounded absolute left-full ml-3 top-1/2 transform -translate-y-1/2 min-w-max max-w-xs">
                         <ul className="marker:text-red-600 list-disc list-inside p-1 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">
                             <b className="text-red-600">URL Help</b>
-                            <li className="ml-2 mr-2"><em>English</em> transcripts only</li>
-                            <li className="ml-2 mr-2">Whole URL needed for playlists/channels</li>
-                            <li className="ml-2 mr-2">Must use direct YouTube link (not shortened URLs)</li>
-                            <li className="ml-2 mr-2">250 most recent videos processed</li>
-                            <li className="ml-2 mr-2">If no link provided, whole database searched</li>
+                            <li className="ml-1 mr-1"><em>English</em> transcripts only</li>
+                            <li className="ml-1 mr-1">Whole URL needed for playlists/channels</li>
+                            <li className="ml-1 mr-1">Must use direct YouTube link (not shortened URLs)</li>
+                            <li className="ml-1 mr-1">250 most recent videos processed</li>
+                            <li className="ml-1 mr-1">If no link provided, whole database searched</li>
                         </ul>
                     </div>
                 )}
@@ -306,14 +306,14 @@ export default function Home() {
                     onBlur={() => setQueryToolTip(false)}
                     />
                 {queryToolTip && (
-                    <div className="tooltip-content bg-gray-700 text-white p-2 rounded absolute left-full ml-3 top-1/2 transform -translate-y-1/2 min-w-max max-w-xs">
+                    <div className="tooltip-content bg-gray-700 p-0 rounded absolute left-full ml-3 top-1/2 transform -translate-y-1/2 min-w-max max-w-xs">
                         <ul className="marker:text-red-600 list-disc list-inside p-1 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">
                             <b className="text-red-600">Query Help</b>
-                            <li className="ml-2 mr-2">Max 5 words, 75 characters</li>
-                            <li className="ml-2 mr-2">Queries must be exactly matched in transcript</li>
-                            <li className="ml-2 mr-2">Common words (i.e. &apos;the&apos;, &apos;am&apos;) alone may not be searched</li>
-                            <li className="ml-2 mr-2">Special characters (except apostrophes) ignored</li>
-                            <li className="ml-2 mr-2">Search is case insensitive</li>
+                            <li className="ml-1 mr-1">Max 5 words, 75 characters</li>
+                            <li className="ml-1 mr-1">Queries must be exactly matched in transcript</li>
+                            <li className="ml-1 mr-1">Common words (i.e. &apos;the&apos;, &apos;am&apos;) can&apos;t be searched alone</li>
+                            <li className="ml-1 mr-1">Special characters (except apostrophes) ignored</li>
+                            <li className="ml-1 mr-1">Search is case insensitive</li>
                         </ul>
                     </div>
                 )}
