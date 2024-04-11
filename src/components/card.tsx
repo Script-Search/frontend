@@ -89,19 +89,21 @@ const Card = ({videoInfo}: Props) => {
 
     return (        
         <div className={`flex flex-col transition-all ease-in duration-500 ${cardLoaded ? 'opacity-100' : 'opacity-0'}`}>
-            <div onClick={openModal} className="w-80 h-80 border-2 rounded border-gray-500 p-2 m-2 transition-all ease-in-out duration-300 hover:bg-red-600 hover:text-white hover:border-red-700 hover:scale-105 cursor-pointer">
+            <div onClick={openModal} className="relative w-80 h-80 border-2 rounded border-gray-500 p-2 m-2 transition-all ease-in-out duration-300 hover:bg-red-600 hover:text-white hover:border-red-700 hover:scale-105 cursor-pointer">
                 <Image
-                        className="relative w-auto"
-                        src={thumbnailLink}
-                        alt="Logo"
-                        width={180}
-                        height={37}
-                        priority
-                    />
+                    className="relative w-auto"
+                    src={thumbnailLink}
+                    alt="Logo"
+                    width={180}
+                    height={37}
+                    priority
+                />
+                <p className="absolute right-2 bottom-36 bg-black bg-opacity-50 text-white px-2 py-1 text-sm">{timestampConversion(videoInfo.duration)}</p>
                 <p className="text-xl font-bold line-clamp-2">{videoInfo.title}</p>
                 <p className="italic line-clamp-1">{videoInfo.channel_name}</p>
-                <p className="relative italic line-clamp-1">{videoInfo.matches.length} match(es) &#8226; Uploaded {dateConversion(videoInfo.upload_date)}</p>
-            </div> 
+                <p className="italic line-clamp-1">{videoInfo.matches.length} match(es) &#8226; Uploaded {dateConversion(videoInfo.upload_date)}</p>
+            </div>
+
 
             <dialog onClick={handleOverlayClick} className={`fixed left-0 top-0 w-full h-full bg-black bg-opacity-50 overflow-auto z-50 backdrop-blur flex justify-center items-center transition-all ease-in-out duration-300 ${modal ? 'visible opacity-100' : 'invisible opacity-0'}`}>
                 <div id = "modal" className="bg-white m-auto px-8 py-4 border-8 border-red-600 rounded-lg flex flex-col flex-wrap dark:bg-black dark:text-white w-1/3">
