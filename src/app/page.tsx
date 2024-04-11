@@ -268,7 +268,7 @@ export default function Home() {
                 <p className="text-2xl before:content-['ScriptSearch'] before:text-red-600 before:font-bold before:"> - YouTube Transcript Search</p>
             </div>
 
-            <div className="group relative flex gap-0 inline-block">
+            <div className="group relative flex gap-1 items-center">
                 <input 
                     type="text" 
                     id="link"
@@ -280,8 +280,8 @@ export default function Home() {
                     src={tooltip_icon}
                     alt="tooltip"
                 />
-                <div className="absolute bg-gray-700 p-0 rounded left-full ml-3 top-1/2 transform -translate-y-1/2 min-w-max max-w-xs opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300">
-                    <ul className="marker:text-red-600 list-disc list-inside p-1 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">
+                <div className="p-2 absolute left-full ml-3 top-1/2 min-w-max max-w-xs rounded-lg bg-gray-300 border-2 border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white -translate-y-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300">
+                    <ul className="marker:text-red-600 list-disc list-inside">
                         <b className="text-red-600">URL Help</b>
                         <li className="ml-1 mr-1"><em>English</em> transcripts only</li>
                         <li className="ml-1 mr-1">Whole URL needed for playlists/channels</li>
@@ -292,7 +292,7 @@ export default function Home() {
                 </div>
             </div>
 
-            <div className="group relative flex gap-0">
+            <div className="group relative flex gap-1 items-center">
                 <input 
                     type="text" 
                     id="query"
@@ -304,8 +304,8 @@ export default function Home() {
                     src={tooltip_icon}
                     alt="tooltip"
                 />
-                <div className="absolute bg-gray-700 p-0 rounded left-full ml-3 top-1/2 transform -translate-y-1/2 min-w-max max-w-xs opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300">
-                    <ul className="marker:text-red-600 list-disc list-inside p-1 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">
+                <div className="p-2 absolute left-full ml-3 top-1/2 min-w-max max-w-xs rounded-lg bg-gray-300 border-2 border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white -translate-y-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300">
+                    <ul className="marker:text-red-600 list-disc list-inside">
                         <b className="text-red-600">Query Help</b>
                         <li className="ml-1 mr-1">Max 5 words, 75 characters</li>
                         <li className="ml-1 mr-1">Queries must be exactly matched in transcript</li>
