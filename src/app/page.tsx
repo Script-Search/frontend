@@ -8,6 +8,7 @@ import Card from "../components/card";
 import InMemoryCache from "../components/cache";
 import { IResult } from "../utils/IResult";
 import logo from '../../public/ScriptSearch_New_Logo.png';
+import tooltip_icon from "../../public/tooltip-icon.png";
 
 const apiLink = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-api"
 const CACHE_SIZE: number = 5;
@@ -19,8 +20,6 @@ export default function Home() {
     const SLEEP_MS = 6500;
     const [error, setError] = useState("");
     const [pageLoaded, setPageLoaded] = useState(false);
-    const [queryToolTip, setQueryToolTip] = useState(false);
-    const [urlToolTip, setUrlToolTip] = useState(false);
 
     const itemsPerPage = 12;
     const pageCount = Math.ceil(searchResults.length / itemsPerPage);
@@ -269,54 +268,52 @@ export default function Home() {
                 <p className="text-2xl before:content-['ScriptSearch'] before:text-red-600 before:font-bold before:"> - YouTube Transcript Search</p>
             </div>
 
-            <div className="justify-center relative">
+            <div className="group relative flex gap-0 inline-block">
                 <input 
                     type="text" 
                     id="link"
                     placeholder="Enter a video/channel/playlist link" 
-                    className="border rounded border-gray-500 p-2 my-1 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                    // onMouseEnter={() => setUrlToolTip(true)}
-                    // onMouseLeave={() => setUrlToolTip(false)}
-                    onFocus={() => setUrlToolTip(true)}
-                    onBlur={() => setUrlToolTip(false)}
+                    className="border rounded border-gray-500 p-2 my-1 w-72 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     />
-                {urlToolTip && (
-                    <div className="tooltip-content bg-gray-700 p-0 rounded absolute left-full ml-3 top-1/2 transform -translate-y-1/2 min-w-max max-w-xs">
-                        <ul className="marker:text-red-600 list-disc list-inside p-1 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">
-                            <b className="text-red-600">URL Help</b>
-                            <li className="ml-1 mr-1"><em>English</em> transcripts only</li>
-                            <li className="ml-1 mr-1">Whole URL needed for playlists/channels</li>
-                            <li className="ml-1 mr-1">Must use direct YouTube link (not shortened URLs)</li>
-                            <li className="ml-1 mr-1">250 most recent videos processed</li>
-                            <li className="ml-1 mr-1">If no link provided, whole database searched</li>
-                        </ul>
-                    </div>
-                )}
+                <Image 
+                    className="relative dark:invert w-7 h-7 cursor-pointer"
+                    src={tooltip_icon}
+                    alt="tooltip"
+                />
+                <div className="absolute bg-gray-700 p-0 rounded left-full ml-3 top-1/2 transform -translate-y-1/2 min-w-max max-w-xs opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300">
+                    <ul className="marker:text-red-600 list-disc list-inside p-1 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">
+                        <b className="text-red-600">URL Help</b>
+                        <li className="ml-1 mr-1"><em>English</em> transcripts only</li>
+                        <li className="ml-1 mr-1">Whole URL needed for playlists/channels</li>
+                        <li className="ml-1 mr-1">Must use direct YouTube link (not shortened URLs)</li>
+                        <li className="ml-1 mr-1">250 most recent videos processed</li>
+                        <li className="ml-1 mr-1">If no link provided, whole database searched</li>
+                    </ul>
+                </div>
             </div>
 
-            <div className="justify-center relative">
+            <div className="group relative flex gap-0">
                 <input 
                     type="text" 
                     id="query"
                     placeholder="Enter a query"
-                    className="border rounded border-gray-500 p-2 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                    // onMouseEnter={() => setQueryToolTip(true)}
-                    // onMouseLeave={() => setQueryToolTip(false)}
-                    onFocus={() => setQueryToolTip(true)}
-                    onBlur={() => setQueryToolTip(false)}
+                    className="border rounded border-gray-500 p-2 w-72 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     />
-                {queryToolTip && (
-                    <div className="tooltip-content bg-gray-700 p-0 rounded absolute left-full ml-3 top-1/2 transform -translate-y-1/2 min-w-max max-w-xs">
-                        <ul className="marker:text-red-600 list-disc list-inside p-1 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">
-                            <b className="text-red-600">Query Help</b>
-                            <li className="ml-1 mr-1">Max 5 words, 75 characters</li>
-                            <li className="ml-1 mr-1">Queries must be exactly matched in transcript</li>
-                            <li className="ml-1 mr-1">Common words (i.e. &apos;the&apos;, &apos;am&apos;) can&apos;t be searched alone</li>
-                            <li className="ml-1 mr-1">Special characters (except apostrophes) ignored</li>
-                            <li className="ml-1 mr-1">Search is case insensitive</li>
-                        </ul>
-                    </div>
-                )}
+                <Image 
+                    className="relative dark:invert w-7 h-7 cursor-pointer"
+                    src={tooltip_icon}
+                    alt="tooltip"
+                />
+                <div className="absolute bg-gray-700 p-0 rounded left-full ml-3 top-1/2 transform -translate-y-1/2 min-w-max max-w-xs opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300">
+                    <ul className="marker:text-red-600 list-disc list-inside p-1 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">
+                        <b className="text-red-600">Query Help</b>
+                        <li className="ml-1 mr-1">Max 5 words, 75 characters</li>
+                        <li className="ml-1 mr-1">Queries must be exactly matched in transcript</li>
+                        <li className="ml-1 mr-1">Common words (i.e. &apos;the&apos;, &apos;am&apos;) can&apos;t be searched alone</li>
+                        <li className="ml-1 mr-1">Special characters (except apostrophes) ignored</li>
+                        <li className="ml-1 mr-1">Search is case insensitive</li>
+                    </ul>
+                </div>
             </div>
 
 
