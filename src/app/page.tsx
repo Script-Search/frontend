@@ -138,14 +138,19 @@ export default function Home() {
                 }
                 urlData = await urlResponse.json();
                 // console.log("First response: " + JSON.stringify(urlData));
-                cache.push(url, urlData);
-
+                
+                // update cache with new data
+                if (urlData["channel_id"])
+                    cache.push(url, { "channel_id" : urlData["channel_id"] });
+                else if (urlData["video_ids"])
+                    cache.push(url, { "video_ids" : urlData["video_ids"] });
+                
                 if (shouldSleep) {
                     await sleep(SLEEP_MS);
                     console.log('Wait finished!');
                 }
             } else {            // if no URL change, use cached data
-                urlData = cache.findResult(url);
+                urlData = cache.findData(url);
                 cache.pivot(url);
             }
         } catch (e) {

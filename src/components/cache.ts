@@ -1,6 +1,6 @@
 interface CacheContent {
     urls: string[];
-    results: any[];
+    data: any[];
 }
 
 class InMemoryCache {
@@ -19,29 +19,29 @@ class InMemoryCache {
         return (this.cache) ? this.cache.urls : null;
     }
 
-    public getResults(): any[] | null {
-        return (this.cache) ? this.cache.results : null;
+    public getData(): any[] | null {
+        return (this.cache) ? this.cache.data : null;
     }
     
-    public push(url: string, result: {}): void {
+    public push(url: string, data: {}): void {
         if (!this.cache) {
-            this.cache = { urls: [], results: [] };
+            this.cache = { urls: [], data: [] };
         }
         if (this.cache.urls.length >= this.cacheMaxSize) {
             this.cache.urls.shift();
-            this.cache.results.shift();
+            this.cache.data.shift();
         }
         this.cache.urls.push(url);
-        this.cache.results.push(result);
+        this.cache.data.push(data);
     }
 
-    public findResult(url: string): {} | null {
+    public findData(url: string): {} | null {
         if (!this.cache) {
             return null;
         }
-        for (let i = 0; i < this.cache.results.length; i++) {
+        for (let i = 0; i < this.cache.data.length; i++) {
             if (this.cache.urls[i] === url) {
-                return this.cache.results[i];
+                return this.cache.data[i];
             }
         }
         return null;
@@ -59,8 +59,8 @@ class InMemoryCache {
         this.cache.urls.splice(idx, 1);
         this.cache.urls.push(url);
         
-        let result = this.cache.results.splice(idx, 1);
-        this.cache.results.push(result);
+        let data = this.cache.data.splice(idx, 1);
+        this.cache.data.push(data);
     }
 }
 
