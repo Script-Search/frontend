@@ -88,7 +88,7 @@ const Card = ({videoInfo}: Props) => {
     }, [modal]);
 
     return (        
-        <div className={`flex flex-col transition-all ease-in duration-500 ${cardLoaded ? 'opacity-100' : 'opacity-0'}`}>
+        <div title="Show Transcript" className={`flex flex-col transition-all ease-in duration-500 ${cardLoaded ? 'opacity-100' : 'opacity-0'}`}>
             <div onClick={openModal} className="relative w-80 h-80 border-2 rounded border-gray-500 p-2 m-2 transition-all ease-in-out duration-300 hover:bg-red-600 hover:text-white hover:border-red-700 hover:scale-105 cursor-pointer">
                 <Image
                     className="relative w-auto"
@@ -111,7 +111,7 @@ const Card = ({videoInfo}: Props) => {
                     {videoInfo.matches.map((result, index) => {
                         return (
                             <div id = "modal" key={index} className="m-3">
-                                <a id = "modal" href={`https://youtu.be/${videoInfo.video_id}?t=${result.timestamp}`} target="_blank" className="font-bold text-blue-500">
+                                <a id = "modal" href={`https://youtu.be/${videoInfo.video_id}?t=${result.timestamp}`} target="_blank" className="font-bold text-blue-500 underline underline-offset-2">
                                 {timestampConversion(result.timestamp)}
                                 </a>
                                 <span id = "modal"> {createMarkup(result.snippet)} </span>

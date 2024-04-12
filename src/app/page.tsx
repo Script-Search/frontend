@@ -273,13 +273,9 @@ export default function Home() {
                     type="text" 
                     id="link"
                     placeholder="Enter a video/channel/playlist link" 
-                    className="border rounded border-gray-500 p-2 my-1 w-72 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                    className="border rounded border-gray-500 p-2 my-1 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     />
-                <Image 
-                    className="relative dark:invert w-7 h-7 cursor-pointer"
-                    src={tooltip_icon}
-                    alt="tooltip"
-                />
+
                 <div className="p-2 absolute left-full ml-3 top-1/2 min-w-max max-w-xs rounded-lg bg-gray-300 border-2 border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white -translate-y-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300">
                     <ul className="marker:text-red-600 list-disc list-inside">
                         <b className="text-red-600">URL Help</b>
@@ -297,13 +293,9 @@ export default function Home() {
                     type="text" 
                     id="query"
                     placeholder="Enter a query"
-                    className="border rounded border-gray-500 p-2 w-72 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                    className="border rounded border-gray-500 p-2 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     />
-                <Image 
-                    className="relative dark:invert w-7 h-7 cursor-pointer"
-                    src={tooltip_icon}
-                    alt="tooltip"
-                />
+                
                 <div className="p-2 absolute left-full ml-3 top-1/2 min-w-max max-w-xs rounded-lg bg-gray-300 border-2 border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white -translate-y-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300">
                     <ul className="marker:text-red-600 list-disc list-inside">
                         <b className="text-red-600">Query Help</b>
