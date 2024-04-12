@@ -98,7 +98,7 @@ const Card = ({videoInfo}: Props) => {
                     height={37}
                     priority
                 />
-                <p className="absolute right-2 bottom-36 bg-black bg-opacity-50 text-white px-2 py-1 text-sm">{timestampConversion(videoInfo.duration)}</p>
+                <p className="absolute right-2 bottom-[139.5px] bg-black bg-opacity-50 text-white px-2 py-1 text-sm rounded-tl rounded-none">{timestampConversion(videoInfo.duration)}</p>
                 <p className="text-xl font-bold line-clamp-2">{videoInfo.title}</p>
                 <p className="italic line-clamp-1">{videoInfo.channel_name}</p>
                 <p className="italic line-clamp-1">{videoInfo.matches.length} match(es) &#8226; Uploaded {dateConversion(videoInfo.upload_date)}</p>
