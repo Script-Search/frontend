@@ -8,16 +8,23 @@ import Card from "../components/card";
 import InMemoryCache from "../components/cache";
 import { IResult } from "../utils/IResult";
 import logo from '../../public/ScriptSearch_New_Logo.png';
-import tooltip_icon from "../../public/tooltip-icon.png";
 
 const apiLink = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-api"
 const CACHE_SIZE: number = 5;
 const cache = new InMemoryCache(CACHE_SIZE);
+const SLEEP_MS = 6500;
+const sortOptions = [
+    { value: 'duration', label: 'Duration' },
+    { value: 'channel_name', label: 'Channel Name' },
+    { value: 'title', label: 'Video Title' },
+    { value: 'matches', label: 'Num. Matches' },
+];
 
 export default function Home() {
     const [searchResults, setSearchResults] = useState<IResult[]>([]);
+    const [sortField, setSortField] = useState("upload_date");
+    const [sortAsc, setSortAsc] = useState(false);
     const [loadingType, setLoadingType] = useState("");
-    const SLEEP_MS = 6500;
     const [error, setError] = useState("");
     const [pageLoaded, setPageLoaded] = useState(false);
 
@@ -40,6 +47,10 @@ export default function Home() {
         };
     }, []);
 
+    useEffect(() => {
+        handleSort(searchResults);
+    }, [sortField, sortAsc])
+
     // generic function to handle errors
     const handleError = (error: any) => {
         // clears results, removes loading icon, and displays error message
@@ -60,6 +71,11 @@ export default function Home() {
         }
     };
 
+    // set field to sort by when dropdown selection changes
+    const handleDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSortField(event.target.value);
+    };
+
     // set loading text on button depending on stage of search
     const loadingText = () => {
         if (loadingType === "stage 1") {
@@ -77,11 +93,12 @@ export default function Home() {
         if (!data || !data["hits"])
             throw "Hits data was null";
         setError((data["hits"].length === 0) ? "No results found." : "");       // inform user of empty results
+        if (data["hits"].length > 0) {
+            sortResultsByField(data["hits"], isValidField(sortField) ? sortField : 'upload_date', sortAsc);
+        }
         setSearchResults(data["hits"]);         // populate results onto page
-    }
-
-    // initial steps to paginate search results
-    function initPaginate(data: { hits: IResult[] }) {
+        
+        // initial steps to paginate search results
         setCurrentPage(0);
         setItemOffset(0);
         setEndOffset(itemsPerPage);
@@ -115,6 +132,32 @@ export default function Home() {
         }
 
         return query;
+    }
+
+    // sort search results on field provided
+    function sortResultsByField(results: IResult[], fieldName: keyof IResult, ascending: boolean = false): IResult[] {
+        // console.log("Sorting by " + fieldName + ":" + (ascending ? "asc" : "desc"));
+        return results.sort((a, b) => {
+            let comp: number;
+            if (fieldName === 'matches')            // sort by number of matches
+                comp = a.matches.length > b.matches.length ? -1 : a.matches.length < b.matches.length ? 1 : 0;
+            else                                    // use standard comparison to sort (lexicographically for strings)
+                comp = a[fieldName] > b[fieldName] ? -1 : a[fieldName] < b[fieldName] ? 1 : 0;
+
+            return ascending ? comp * -1 : comp;
+        });
+    }
+
+    // determine if field is contained in IResult
+    function isValidField(field: any): field is keyof IResult {
+        return ["title", "channel_name", "upload_date", "duration", "matches"].includes(field);
+    }
+
+    // sort results when necessary
+    function handleSort(results: IResult[]) {
+        if (results.length > 0) {
+            handleHits({ hits: sortResultsByField(results, isValidField(sortField) ? sortField : 'upload_date', sortAsc) });
+        }
     }
 
     // get URL data from API
@@ -177,11 +220,11 @@ export default function Home() {
                 throw "Search failed :(";
             }
             const searchData = await searchResponse.json();
-            // console.log(data);
+            // console.log(searchData);
 
             // display and paginate results
+            // handleSort(searchData["hits"]);
             handleHits(searchData);
-            initPaginate(searchData);
         } catch (e) {
             handleError(e);
         }
@@ -313,7 +356,6 @@ export default function Home() {
                 </div>
             </div>
 
-
             <button 
                 id="search" 
                 onClick={() => backendConnect()} 
@@ -334,6 +376,30 @@ export default function Home() {
                 )}
                 <span>{loadingText()}</span>
             </button>
+
+            <div className="flex justify-center gap-3 items-center my-1">
+                <p>Sort By: </p>
+                <select 
+                    value={sortField} 
+                    onChange={handleDropdownChange} 
+                    disabled={loadingType.length > 0}
+                    className="cursor-pointer flex justify-center items-center border border-gray-500 rounded py-1 my-1/4 w-32 transition-colors dark:bg-gray-800 dark:text-white ease-in-out hover:bg-red-600 hover:text-white hover:border-red-700 space-x-2"
+                    >
+                        <option value="upload_date">Upload Date</option>
+                        {sortOptions.map(option => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                </select>
+                <p>Ascending: </p>
+                <input 
+                    type="checkbox"
+                    checked={sortAsc}
+                    onChange={() => setSortAsc(!sortAsc)}
+                    disabled={loadingType.length > 0}
+                />
+            </div>
 
             {error.length != 0 &&
             <div>
