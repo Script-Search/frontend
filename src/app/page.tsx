@@ -9,11 +9,11 @@ import InMemoryCache from "../components/cache";
 import { IResult } from "../utils/IResult";
 import logo from '../../public/ScriptSearch_New_Logo.png';
 
-const apiLink = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-api"
+const API_LINK = "https://us-central1-scriptsearch.cloudfunctions.net/transcript-api"
 const CACHE_SIZE: number = 5;
-const cache = new InMemoryCache(CACHE_SIZE);
+const CACHE = new InMemoryCache(CACHE_SIZE);
 const SLEEP_MS = 6500;
-const sortOptions = [
+const SORT_OPTIONS = [
     { value: 'duration', label: 'Duration' },
     { value: 'channel_name', label: 'Channel Name' },
     { value: 'title', label: 'Video Title' },
@@ -28,7 +28,8 @@ export default function Home() {
     const [error, setError] = useState("");
     const [pageLoaded, setPageLoaded] = useState(false);
 
-    const itemsPerPage = 12;
+    // const itemsPerPage = 12;
+    const [itemsPerPage, setItemsPerPage] = useState(12);
     const pageCount = Math.ceil(searchResults.length / itemsPerPage);
     const [itemOffset, setItemOffset] = useState(0);
     const [endOffset, setEndOffset] = useState(itemsPerPage);
@@ -49,7 +50,11 @@ export default function Home() {
 
     useEffect(() => {
         handleSort(searchResults);
-    }, [sortField, sortAsc])
+    }, [sortField, sortAsc]);
+
+    useEffect(() => {
+        paginate(searchResults);
+    }, [itemsPerPage]);
 
     // generic function to handle errors
     const handleError = (error: any) => {
@@ -97,12 +102,15 @@ export default function Home() {
             sortResultsByField(data["hits"], isValidField(sortField) ? sortField : 'upload_date', sortAsc);
         }
         setSearchResults(data["hits"]);         // populate results onto page
-        
-        // initial steps to paginate search results
+        paginate(data["hits"]);
+    }
+
+    // initial steps to paginate search results
+    function paginate(hits: IResult[]) {
         setCurrentPage(0);
         setItemOffset(0);
         setEndOffset(itemsPerPage);
-        setCurrentItems(data["hits"].slice(0, itemsPerPage));
+        setCurrentItems(hits.slice(0, itemsPerPage));
     }
 
     function validateQuery(query: string) {
@@ -163,13 +171,13 @@ export default function Home() {
     // get URL data from API
     async function urlFetch(url: string, shouldSleep: boolean = true) {
         // get cached info, if any
-        let cachedURLs = cache.getUrls();
+        let cachedURLs = CACHE.getUrls();
         let urlData = {} as any;
         try {
             if (!cachedURLs || !cachedURLs.includes(url)) {    // only query API if URL has changed
                 setLoadingType("stage 1");
                 // fetch URL data from API
-                const urlResponse = await fetch(apiLink, {
+                const urlResponse = await fetch(API_LINK, {
                     method: "POST", 
                     body: JSON.stringify({ url: url }),
                     headers: {
@@ -184,17 +192,17 @@ export default function Home() {
                 
                 // update cache with new data
                 if (urlData["channel_id"])
-                    cache.push(url, { "channel_id" : urlData["channel_id"] });
+                    CACHE.push(url, { "channel_id" : urlData["channel_id"] });
                 else if (urlData["video_ids"])
-                    cache.push(url, { "video_ids" : urlData["video_ids"] });
+                    CACHE.push(url, { "video_ids" : urlData["video_ids"] });
                 
                 if (shouldSleep) {
                     await sleep(SLEEP_MS);
                     console.log('Wait finished!');
                 }
             } else {            // if no URL change, use cached data
-                urlData = cache.findData(url);
-                cache.pivot(url);
+                urlData = CACHE.findData(url);
+                CACHE.pivot(url);
             }
         } catch (e) {
             urlData = null;
@@ -209,7 +217,7 @@ export default function Home() {
             let dataSend = (!urlData) ? { query: query } : urlData;
             setLoadingType("stage 2");
             // fetch search results from API
-            const searchResponse = await fetch(apiLink, {
+            const searchResponse = await fetch(API_LINK, {
                 method: "POST", 
                 body: JSON.stringify(dataSend),
                 headers: {
@@ -386,7 +394,7 @@ export default function Home() {
                     className="cursor-pointer flex justify-center items-center border border-gray-500 rounded py-1 my-1/4 w-32 transition-colors dark:bg-gray-800 dark:text-white ease-in-out hover:bg-red-600 hover:text-white hover:border-red-700 space-x-2"
                     >
                         <option value="upload_date">Upload Date</option>
-                        {sortOptions.map(option => (
+                        {SORT_OPTIONS.map(option => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>
