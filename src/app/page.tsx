@@ -19,6 +19,8 @@ const SORT_OPTIONS = [
     { value: 'title', label: 'Video Title' },
     { value: 'matches', label: 'Num. Matches' },
 ];
+// const PAGE_OPTIONS = Array.from({ length: 50 }, (_, index) => index + 1);            // array from 1 to 50
+const PAGE_OPTIONS = [10, 15, 25, 50, 100];
 
 export default function Home() {
     const [searchResults, setSearchResults] = useState<IResult[]>([]);
@@ -49,7 +51,9 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        handleSort(searchResults);
+        if (searchResults.length > 0) {
+            handleHits({ hits: searchResults });
+        }
     }, [sortField, sortAsc]);
 
     useEffect(() => {
@@ -77,8 +81,13 @@ export default function Home() {
     };
 
     // set field to sort by when dropdown selection changes
-    const handleDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleSortDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSortField(event.target.value);
+    };
+    
+    // set field to sort by when dropdown selection changes
+    const handlePageDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setItemsPerPage(Number(event.target.value));
     };
 
     // set loading text on button depending on stage of search
@@ -159,13 +168,6 @@ export default function Home() {
     // determine if field is contained in IResult
     function isValidField(field: any): field is keyof IResult {
         return ["title", "channel_name", "upload_date", "duration", "matches"].includes(field);
-    }
-
-    // sort results when necessary
-    function handleSort(results: IResult[]) {
-        if (results.length > 0) {
-            handleHits({ hits: sortResultsByField(results, isValidField(sortField) ? sortField : 'upload_date', sortAsc) });
-        }
     }
 
     // get URL data from API
@@ -316,6 +318,9 @@ export default function Home() {
                         alt="Logo"
                         width={385}
                         height={385}
+                        onClick={() => window.location.reload()}
+                        style={{cursor: "pointer"}}
+                        title="Back to Home"
                         priority
                     />
             </div>
@@ -389,7 +394,7 @@ export default function Home() {
                 <p>Sort By: </p>
                 <select 
                     value={sortField} 
-                    onChange={handleDropdownChange} 
+                    onChange={handleSortDropdownChange} 
                     disabled={loadingType.length > 0}
                     className="cursor-pointer flex justify-center items-center border border-gray-500 rounded py-1 my-1/4 w-32 transition-colors dark:bg-gray-800 dark:text-white ease-in-out hover:bg-red-600 hover:text-white hover:border-red-700 space-x-2"
                     >
@@ -408,6 +413,23 @@ export default function Home() {
                     disabled={loadingType.length > 0}
                 />
             </div>
+
+            {/* <div className="flex justify-center gap-3 items-center my-1">
+                <p>Items Per Page: </p>
+                <select 
+                    value={sortField} 
+                    onChange={handlePageDropdownChange} 
+                    disabled={searchResults.length === 0}
+                    className="cursor-pointer flex justify-center items-center border border-gray-500 rounded py-1 my-1/4 w-32 transition-colors dark:bg-gray-800 dark:text-white ease-in-out hover:bg-red-600 hover:text-white hover:border-red-700 space-x-2"
+                    >
+                        <option value={itemsPerPage}>{itemsPerPage}</option>
+                        {PAGE_OPTIONS.map(option => (
+                            <option key={option} value={option}>
+                                {option}
+                            </option>
+                        ))}
+                </select>
+            </div> */}
 
             {error.length != 0 &&
             <div>
