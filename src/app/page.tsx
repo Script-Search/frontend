@@ -121,6 +121,9 @@ export default function Home() {
         // replace + with " plus" to catch certain relevant edge cases
         query = query.replace(/\+/g, " plus");
 
+        // drop leading and trailing whitespace (again)
+        query = query.trim();
+
         // Check if the query is a common word
         if (COMMON_WORDS.includes(query)) {
             throw "Please enter a more specific query.";
