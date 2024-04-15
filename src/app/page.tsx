@@ -158,6 +158,9 @@ export default function Home() {
             let comp: number;
             if (fieldName === 'matches')            // sort by number of matches
                 comp = a.matches.length > b.matches.length ? -1 : a.matches.length < b.matches.length ? 1 : 0;
+            if(fieldName === 'channel_name' || fieldName === 'title'){
+                comp = a[fieldName].toLowerCase().localeCompare(b[fieldName].toLowerCase()) * -1;
+            }
             else                                    // use standard comparison to sort (lexicographically for strings)
                 comp = a[fieldName] > b[fieldName] ? -1 : a[fieldName] < b[fieldName] ? 1 : 0;
 
@@ -396,7 +399,7 @@ export default function Home() {
                     value={sortField} 
                     onChange={handleSortDropdownChange} 
                     disabled={loadingType.length > 0}
-                    className="cursor-pointer flex justify-center items-center border border-gray-500 rounded py-1 my-1/4 w-32 transition-colors dark:bg-gray-800 dark:text-white ease-in-out hover:bg-red-600 hover:text-white hover:border-red-700 space-x-2"
+                    className="cursor-pointer flex justify-center items-center border border-gray-500 rounded py-1 my-1/4 w-32 transition-colors dark:bg-gray-800 dark:text-white ease-in-out space-x-2"
                     >
                         <option value="upload_date">Upload Date</option>
                         {SORT_OPTIONS.map(option => (
@@ -408,6 +411,7 @@ export default function Home() {
                 <p>Ascending: </p>
                 <input 
                     type="checkbox"
+                    className="accent-red-600"
                     checked={sortAsc}
                     onChange={() => setSortAsc(!sortAsc)}
                     disabled={loadingType.length > 0}
@@ -460,8 +464,8 @@ export default function Home() {
                     nextClassName="transition-all ease-in-out duration-100 hover:scale-110"
                     breakClassName="transition-all ease-in-out duration-100 hover:scale-110"
                     pageLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded text-red-700 bg-white dark:invert"
-                    previousLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded bg-red-600 text-white dark:invert"
-                    nextLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded bg-red-600 text-white dark:invert"
+                    previousLinkClassName={`text-3xl px-2 mx-1 border-2 border-red-700 bg-red-600 text-white rounded dark:invert ${currentPage == 0 ? 'hidden' : ''}`}
+                    nextLinkClassName={`text-3xl px-2 mx-1 border-2 border-red-700 rounded bg-red-600 text-white dark:invert ${currentPage == pageCount - 1 ? 'hidden' : ''}`}
                     breakLinkClassName="text-3xl px-2 mx-1 border-2 border-red-700 rounded text-red-700 bg-white dark:invert"
                     activeLinkClassName="[&&]:bg-red-600 [&&]:text-white font-bold"
                     />
