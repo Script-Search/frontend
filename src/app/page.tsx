@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Image from 'next/image';
 import React, { useState } from "react";
 import ReactPaginate from 'react-paginate';
@@ -19,19 +19,18 @@ const SORT_OPTIONS = [
     { value: 'title', label: 'Video Title' },
     { value: 'matches', label: 'Num. Matches' },
 ];
-// const PAGE_OPTIONS = Array.from({ length: 50 }, (_, index) => index + 1);            // array from 1 to 50
-const PAGE_OPTIONS = [10, 15, 25, 50, 100];
 
 export default function Home() {
     const [searchResults, setSearchResults] = useState<IResult[]>([]);
     const [sortField, setSortField] = useState("upload_date");
     const [sortAsc, setSortAsc] = useState(false);
+    const sortRef = useRef({sortField, sortAsc});
+    sortRef.current = { sortField: sortField, sortAsc: sortAsc };
     const [loadingType, setLoadingType] = useState("");
     const [error, setError] = useState("");
     const [pageLoaded, setPageLoaded] = useState(false);
 
-    // const itemsPerPage = 12;
-    const [itemsPerPage, setItemsPerPage] = useState(12);
+    const itemsPerPage = 12;
     const pageCount = Math.ceil(searchResults.length / itemsPerPage);
     const [itemOffset, setItemOffset] = useState(0);
     const [endOffset, setEndOffset] = useState(itemsPerPage);
@@ -51,14 +50,11 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
+        sortRef.current = { sortField: sortField, sortAsc: sortAsc };
         if (searchResults.length > 0) {
             handleHits({ hits: searchResults });
         }
     }, [sortField, sortAsc]);
-
-    useEffect(() => {
-        paginate(searchResults);
-    }, [itemsPerPage]);
 
     // generic function to handle errors
     const handleError = (error: any) => {
@@ -84,11 +80,6 @@ export default function Home() {
     const handleSortDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSortField(event.target.value);
     };
-    
-    // set field to sort by when dropdown selection changes
-    const handlePageDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setItemsPerPage(Number(event.target.value));
-    };
 
     // set loading text on button depending on stage of search
     const loadingText = () => {
@@ -108,7 +99,8 @@ export default function Home() {
             throw "Hits data was null";
         setError((data["hits"].length === 0) ? "No results found." : "");       // inform user of empty results
         if (data["hits"].length > 0) {
-            sortResultsByField(data["hits"], isValidField(sortField) ? sortField : 'upload_date', sortAsc);
+            let tempSortField = sortRef.current["sortField"] as any;
+            sortResultsByField(data["hits"], isValidField(tempSortField) ? tempSortField : 'upload_date', sortRef.current["sortAsc"] as any);
         }
         setSearchResults(data["hits"]);         // populate results onto page
         paginate(data["hits"]);
@@ -158,9 +150,8 @@ export default function Home() {
             let comp: number;
             if (fieldName === 'matches')            // sort by number of matches
                 comp = a.matches.length > b.matches.length ? -1 : a.matches.length < b.matches.length ? 1 : 0;
-            if(fieldName === 'channel_name' || fieldName === 'title'){
+            else if (fieldName === 'channel_name' || fieldName === 'title')
                 comp = a[fieldName].toLowerCase().localeCompare(b[fieldName].toLowerCase()) * -1;
-            }
             else                                    // use standard comparison to sort (lexicographically for strings)
                 comp = a[fieldName] > b[fieldName] ? -1 : a[fieldName] < b[fieldName] ? 1 : 0;
 
@@ -418,23 +409,6 @@ export default function Home() {
                 />
             </div>
 
-            {/* <div className="flex justify-center gap-3 items-center my-1">
-                <p>Items Per Page: </p>
-                <select 
-                    value={sortField} 
-                    onChange={handlePageDropdownChange} 
-                    disabled={searchResults.length === 0}
-                    className="cursor-pointer flex justify-center items-center border border-gray-500 rounded py-1 my-1/4 w-32 transition-colors dark:bg-gray-800 dark:text-white ease-in-out hover:bg-red-600 hover:text-white hover:border-red-700 space-x-2"
-                    >
-                        <option value={itemsPerPage}>{itemsPerPage}</option>
-                        {PAGE_OPTIONS.map(option => (
-                            <option key={option} value={option}>
-                                {option}
-                            </option>
-                        ))}
-                </select>
-            </div> */}
-
             {error.length != 0 &&
             <div>
                 <p className="text-2xl font-bold my-10">{error}</p>
@@ -479,14 +453,6 @@ export default function Home() {
                 <li className="ml-5">To search a specific channel or playlist for a certain phrase, give us the link of the channel/playlist in question in the first box, then enter your query in the second box.</li>
                 <li className="ml-5">To search our entire database for a certain phrase, just enter your search query.</li>
                 <li className="ml-5">When the search is complete, you can click on any of the resulting videos to see all transcript matches and a corresponding timestamped link.</li>
-                {/* <br></br>
-                <b className="text-red-600">There are a number of restrictions that must be considered to get the most out of our application:</b>
-                <li className="ml-5">Our search ignores case, and queries are matched <em>exactly</em> with portions of the transcript.</li>
-                <li className="ml-5">When providing a channel or playlist link, it must be a direct YouTube link (i.e. &apos;youtube.com&apos; or &apos;youtu.be&apos;, NOT tinyurls or shortened links).</li>
-                <li className="ml-5">We only search the 250 most recent videos in the link provided, and our search will return at most 250 results.</li>
-                <li className="ml-5">Only English language transcripts are searched by our application.</li>
-                <li className="ml-5">Queries must be 5 words or less and shorter than 75 characters.</li>
-                <li className="ml-5">Searching common words such as &apos;the&apos; or &apos;a&apos; is not allowed.</li> */}
                 </ul>
             </div>
 
