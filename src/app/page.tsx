@@ -322,19 +322,18 @@ export default function Home() {
                     />
             </div>
 
-            <div className="">    
-                <p className="text-2xl before:content-['ScriptSearch'] before:text-red-600 before:font-bold before:"> - YouTube Transcript Search</p>
-            </div>
+            <p className="text-4xl text-red-600 font-bold">ScriptSearch</p>
+            <p className="text-xl text-black">Search Phrases in YouTube Transcripts</p>
 
-            <div className="group relative flex gap-1 items-center">
+            <div className="relative flex gap-1 items-center">
                 <input 
                     type="text" 
                     id="link"
                     placeholder="Enter a video/channel/playlist link" 
-                    className="border rounded border-gray-500 p-2 my-1 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                    className="peer border rounded border-gray-500 p-2 my-1 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     />
 
-                <div className="p-2 absolute left-full ml-3 top-1/2 min-w-max max-w-xs rounded-lg bg-gray-300 border-2 border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white -translate-y-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300">
+                <div className="p-2 absolute left-full ml-3 top-1/2 min-w-max max-w-xs rounded-lg bg-gray-300 border-2 border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white -translate-y-1/2 opacity-0 invisible peer-focus:opacity-100 peer-focus:visible transition-opacity duration-300">
                     <ul className="marker:text-red-600 list-disc list-inside">
                         <b className="text-red-600">URL Help</b>
                         <li className="ml-1 mr-1"><em>English</em> transcripts only</li>
@@ -346,15 +345,15 @@ export default function Home() {
                 </div>
             </div>
 
-            <div className="group relative flex gap-1 items-center">
+            <div className="relative flex gap-1 items-center">
                 <input 
                     type="text" 
                     id="query"
                     placeholder="Enter a query"
-                    className="border rounded border-gray-500 p-2 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                    className="peer border rounded border-gray-500 p-2 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     />
                 
-                <div className="p-2 absolute left-full ml-3 top-1/2 min-w-max max-w-xs rounded-lg bg-gray-300 border-2 border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white -translate-y-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300">
+                <div className="p-2 absolute left-full ml-3 top-1/2 min-w-max max-w-xs rounded-lg bg-gray-300 border-2 border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white -translate-y-1/2 opacity-0 invisible peer-focus:opacity-100 peer-focus:visible transition-opacity duration-300">
                     <ul className="marker:text-red-600 list-disc list-inside">
                         <b className="text-red-600">Query Help</b>
                         <li className="ml-1 mr-1">Max 5 words, 75 characters</li>
@@ -418,6 +417,10 @@ export default function Home() {
             </div>
             }
 
+                <div className="mt-5">
+                    <b className={`text-3xl p-2 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white transition-all ease-in-out duration-300 ${searchResults.length == 0 ? "opacity-0" : "opacity-100"}`}>Click on any video for timestamped links</b>
+                </div>
+            
             {searchResults.length != 0 && 
             <>
                 <div className="flex flex-row flex-wrap justify-center items-center py-4">
@@ -435,7 +438,7 @@ export default function Home() {
                     pageCount={pageCount}
                     previousLabel="<"
                     renderOnZeroPageCount={null}
-                    className="flex flex-row mt-4 bg-gray-300 p-5 rounded fixed bottom-0 left-0 w-screen justify-center bg-opacity-90 dark:invert"
+                    className="flex flex-row mt-4 bg-gray-300 p-3 rounded fixed bottom-0 left-0 w-screen justify-center bg-opacity-90 dark:invert"
                     pageClassName="transition-all ease-in-out duration-100 hover:scale-110"
                     previousClassName="transition-all ease-in-out duration-100 hover:scale-110"
                     nextClassName="transition-all ease-in-out duration-100 hover:scale-110"
@@ -449,15 +452,6 @@ export default function Home() {
                 </div>
             </>
             }
-            
-            <div className="w-11/12 my-5">
-                <ul className="marker:text-red-600 list-disc list-inside p-2 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white">
-                <b className="text-red-600">Welcome to ScriptSearch! This tool will allow you to search the transcripts of a specified YouTube channel or playlist.</b>
-                <li className="ml-5">To search a specific channel or playlist for a certain phrase, give us the link of the channel/playlist in question in the first box, then enter your query in the second box.</li>
-                <li className="ml-5">To search our entire database for a certain phrase, just enter your search query.</li>
-                <li className="ml-5">When the search is complete, you can click on any of the resulting videos to see all transcript matches and a corresponding timestamped link.</li>
-                </ul>
-            </div>
 
         </main>
     );
