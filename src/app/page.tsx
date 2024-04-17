@@ -84,9 +84,12 @@ export default function Home() {
     // set loading text on button depending on stage of search
     const loadingText = () => {
         if (loadingType === "stage 1") {
-            return "Populating Database...";
+            return "Processing URL...";
         }
         else if (loadingType === "stage 2") {
+            return "Populating Database...";
+        }
+        else if (loadingType === "stage 3") {
             return "Searching Database...";
         }
         return "Search";            // default button text
@@ -128,10 +131,10 @@ export default function Home() {
         if (COMMON_WORDS.includes(query)) {
             throw "Please enter a more specific query.";
         }
-        // Check if entire query is common words
-        if (query.split(" ").every(word => COMMON_WORDS.includes(word))) {
-            throw "Please enter a more specific query.";
-        }
+        // // Check if entire query is common words
+        // if (query.split(" ").every(word => COMMON_WORDS.includes(word))) {
+        //     throw "Please enter a more specific query.";
+        // }
 
         // Check if the query is too long
         if (query.split(" ").length > WORD_LIMIT) {
@@ -194,7 +197,9 @@ export default function Home() {
                     CACHE.push(url, { "channel_id" : urlData["channel_id"] });
                 else if (urlData["video_ids"])
                     CACHE.push(url, { "video_ids" : urlData["video_ids"] });
-                
+
+                // sleep while populating database
+                setLoadingType("stage 2");
                 if (shouldSleep) {
                     await sleep(SLEEP_MS);
                     console.log('Wait finished!');
@@ -214,7 +219,7 @@ export default function Home() {
     async function queryFetch(query: string, urlData: any | null) {
         try {
             let dataSend = (!urlData) ? { query: query } : urlData;
-            setLoadingType("stage 2");
+            setLoadingType("stage 3");
             // fetch search results from API
             const searchResponse = await fetch(API_LINK, {
                 method: "POST", 
@@ -323,7 +328,7 @@ export default function Home() {
             </div>
 
             <p className="text-4xl text-red-600 font-bold">ScriptSearch</p>
-            <p className="text-xl text-black">Search Phrases in YouTube Transcripts</p>
+            <p className="text-xl text-black dark:invert pb-3">Search Phrases in YouTube Transcripts</p>
 
             <div className="relative flex gap-1 items-center">
                 <input 
@@ -357,7 +362,8 @@ export default function Home() {
                     <ul className="marker:text-red-600 list-disc list-inside">
                         <b className="text-red-600">Query Help</b>
                         <li className="ml-1 mr-1">Max 5 words, 75 characters</li>
-                        <li className="ml-1 mr-1">Queries must be exactly matched in transcript</li>
+                        {/* <li className="ml-1 mr-1">Queries must be exactly matched in transcript</li> */}
+                        <li className="ml-1 mr-1">All words in query must be exactly matched in transcript</li>
                         <li className="ml-1 mr-1">Common words (i.e. &apos;the&apos;, &apos;am&apos;) can&apos;t be searched alone</li>
                         <li className="ml-1 mr-1">Special characters (except apostrophes) ignored</li>
                         <li className="ml-1 mr-1">Search is case insensitive</li>
