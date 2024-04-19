@@ -106,7 +106,7 @@ const Card = ({videoInfo}: Props) => {
 
 
             <dialog onClick={handleOverlayClick} className={`fixed left-0 top-0 w-full h-full bg-black bg-opacity-50 overflow-auto z-50 backdrop-blur flex justify-center items-center transition-all ease-in-out duration-300 ${modal ? 'visible opacity-100' : 'invisible opacity-0'}`}>
-                <div id = "modal" className="bg-white m-auto px-8 py-4 border-8 border-red-600 rounded-lg flex flex-col flex-wrap dark:bg-black dark:text-white w-1/3">
+                <div id = "modal" className="bg-white m-auto px-8 py-4 border-8 border-red-600 rounded-lg flex flex-col flex-wrap dark:bg-black dark:text-white w-1/2">
                     <p id = "modal" className="font-bold text-2xl place-self-center">Results</p>
                     {videoInfo.matches.map((result, index) => {
                         return (
