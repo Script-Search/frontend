@@ -338,11 +338,11 @@ export default function Home() {
                     className="peer border rounded border-gray-500 p-2 my-1 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     />
 
-                <div className="p-2 absolute left-full ml-3 top-1/2 min-w-max max-w-xs rounded-lg bg-gray-300 border-2 border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white -translate-y-1/2 opacity-0 invisible peer-focus:opacity-100 peer-focus:visible transition-opacity duration-300">
+                <div className="p-2 absolute md:left-full md:top-1/2 md:ml-3 md:-translate-y-1/2 inset-x-0 md:inset-auto bottom-full md:bottom-auto mb-3 md:mb-0 min-w-80 max-w-80 rounded-lg bg-gray-300 border-2 border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white opacity-0 invisible peer-focus:opacity-100 peer-focus:visible transition-opacity duration-300">
                     <ul className="marker:text-red-600 list-disc list-inside">
                         <b className="text-red-600">URL Help</b>
                         <li className="ml-1 mr-1"><em>English</em> transcripts only</li>
-                        <li className="ml-1 mr-1">Whole URL needed for playlists/channels</li>
+                        <li className="ml-1 mr-1">Whole URL needed for playlists or channels</li>
                         <li className="ml-1 mr-1">Must use direct YouTube link (not shortened URLs)</li>
                         <li className="ml-1 mr-1">250 most recent videos processed</li>
                         <li className="ml-1 mr-1">If no link provided, whole database searched</li>
@@ -358,11 +358,10 @@ export default function Home() {
                     className="peer border rounded border-gray-500 p-2 w-80 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     />
                 
-                <div className="p-2 absolute left-full ml-3 top-1/2 min-w-max max-w-xs rounded-lg bg-gray-300 border-2 border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white -translate-y-1/2 opacity-0 invisible peer-focus:opacity-100 peer-focus:visible transition-opacity duration-300">
+                <div className="p-2 absolute md:left-full md:top-1/2 md:ml-3 md:-translate-y-1/2 inset-x-0 md:inset-auto bottom-full md:bottom-auto mb-3 md:mb-0 min-w-80 max-w-80 rounded-lg bg-gray-300 border-2 border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white opacity-0 invisible peer-focus:opacity-100 peer-focus:visible transition-opacity duration-300">
                     <ul className="marker:text-red-600 list-disc list-inside">
                         <b className="text-red-600">Query Help</b>
                         <li className="ml-1 mr-1">Max 5 words, 75 characters</li>
-                        {/* <li className="ml-1 mr-1">Queries must be exactly matched in transcript</li> */}
                         <li className="ml-1 mr-1">All words in query must be exactly matched in transcript</li>
                         <li className="ml-1 mr-1">Common words (i.e. &apos;the&apos;, &apos;am&apos;) can&apos;t be searched alone</li>
                         <li className="ml-1 mr-1">Special characters (except apostrophes) ignored</li>
@@ -423,9 +422,9 @@ export default function Home() {
             </div>
             }
 
-                <div className="mt-5">
-                    <b className={`text-3xl p-2 bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white transition-all ease-in-out duration-300 ${searchResults.length == 0 ? "opacity-0" : "opacity-100"}`}>Click on any video for timestamped links</b>
-                </div>
+            <div className="mt-5">
+                <b className={`text-lg md:text-3xl p-2 min-w-[10rem] bg-gray-300 border-2 rounded-lg border-gray-700 dark:bg-gray-800 dark:border-white-700 dark:text-white transition-all ease-in-out duration-300 ${searchResults.length === 0 ? "opacity-0 hidden" : "opacity-100"}`}>Click on any video for timestamped links</b>
+            </div>
             
             {searchResults.length != 0 && 
             <>
