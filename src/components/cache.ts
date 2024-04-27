@@ -59,7 +59,7 @@ class InMemoryCache {
         this.cache.urls.splice(idx, 1);
         this.cache.urls.push(url);
         
-        let data = this.cache.data.splice(idx, 1);
+        let data = this.cache.data.splice(idx, 1)[0];
         this.cache.data.push(data);
     }
 }

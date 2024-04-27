@@ -202,7 +202,7 @@ export default function Home() {
                 setLoadingType("stage 2");
                 if (shouldSleep) {
                     await sleep(SLEEP_MS);
-                    console.log('Wait finished!');
+                    console.log('Finished populating database!');
                 }
             } else {            // if no URL change, use cached data
                 urlData = CACHE.findData(url);
@@ -268,7 +268,8 @@ export default function Home() {
 
         // if URL given, search just that channel/playlist/video
         else if (url && query) {
-            let urlData = await urlFetch(url) as any;
+            let tempUrlData = await urlFetch(url) as any;
+            let urlData = JSON.parse(JSON.stringify(tempUrlData));          // make copy to prevent overwriting
             if (urlData) {
                 urlData["query"] = query;          // add query to URL data
                 queryFetch(query, urlData);
