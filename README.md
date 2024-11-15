@@ -1,3 +1,7 @@
+This is the frontend of the ScriptSearch application, the backend of which can be found [here](https://github.com/Script-Search/backend). The capabilities of the website are currently reduced in the interest of cost efficiency, but here's a [quick video](https://www.youtube.com/watch?v=jeOV_euLox4) showcasing our application. For our User Manual and more detailed info, see our [Wiki](https://github.com/Script-Search/frontend/wiki).
+
+---
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
